@@ -163,6 +163,7 @@ function secondaryImgSwap(img) {
 
 const Content = styled.div`
     .wrapper {
+        position: relative;
         display: grid;
         grid-template-columns: repeat(12, 1fr);
         align-items: start;
@@ -177,10 +178,19 @@ const Content = styled.div`
                 align-items: start;
                 .product-images {
                     display: flex;
-                    grid-column: 1 / 7;
+                    grid-column: 1 / 13;
+                    max-height: 600px;
+                    @media (min-width: 768px) {
+                        grid-column: 1 / 7;
+                        min-height: unset;
+                        max-height: 5000px;
+                    }
                 }
                 .product-content-box {
-                    grid-column: 7 / 13;
+                    grid-column: 1 / 13;
+                    @media (min-width: 768px) {
+                        grid-column: 7 / 13;
+                    }
                     h1 {
                         font-size: 3rem;
                         color: #19382F;
@@ -256,7 +266,7 @@ const Content = styled.div`
                 .variant-showcase-img-current {
                     width: 100%;
                     height: 100%;
-                    object-fit: contain;
+                    object-fit: cover;
                 }
                 .image-secondary-group {
                     
@@ -264,10 +274,23 @@ const Content = styled.div`
                 .variant-image-group {
                     position: relative;
                     width: 100%;
-                    min-height: 700px;
-                    height: 700px;
-                    max-height: 700px;
-                    padding: 0 50px 0 50px;
+                    min-height: 300px;
+                    height: 300px;
+                    max-height: 300px;
+                    padding: 0 25px 0 25px;
+                    @media (min-width: 516px) {
+                        min-height: 400px;
+                        height: 400px;
+                        max-height: 400px;
+                    }
+                    @media (min-width: 992px) {
+                        padding: 0 50px 0 50px;
+                    }
+                    @media (min-width: 1200px) {
+                        min-height: 700px;
+                        height: 700px;
+                        max-height: 700px;
+                    }
                 }
             }
         }
@@ -285,9 +308,6 @@ const Content = styled.div`
             transition: border .25s;
         }
     }
-    .variant-showcase-img-active {
-        border: 3px solid #092615;
-    }
     .variant-secondary-img {
         border: 3px solid transparent;
         transition: border .25s;
@@ -302,8 +322,10 @@ const Content = styled.div`
     }
     .showcase-img-wrapper {
         position: relative;
-        width: 100px;
-        height: 100px;
+        width: 48px;
+        height: 48px;
+        border: 2px solid #091511;
+        border-radius: 6px;
     }
     .variant-size-option {
         display: none;
@@ -314,10 +336,13 @@ const Content = styled.div`
     .variant-trigger-wrapper {
         display: flex;
         flex-wrap: wrap;
-        grid-column: 2 / 7;
+        grid-column: 1 / 13;
+        gap: 8px;
         max-width: 450px;
-        margin: 0 auto;
-        padding-top: 25px;
+        padding-bottom: 25px;
+        @media (min-width: 768px) {
+            grid-column: 2 / 7;
+        }
     }
     .cart-interaction {
         font-family: 'franklin-gothic-urw', sans-serif;
@@ -332,6 +357,30 @@ const Content = styled.div`
         opacity: 1;
         transform: translateY(0px);
         transition: .25s;
+    }
+    .desktop-product-title {
+        font-size: 4rem;
+        color: #19382F;
+        text-transform: uppercase;
+        display: none;
+        @media (min-width: 768px) {
+           display: block;
+        }
+    }
+    .mobile-product-title {
+        grid-column: 1 / 13;
+        width: 100%;
+        font-size: 2.5rem;
+        color: #19382F;
+        padding-bottom: 50px;
+        text-transform: uppercase;
+        text-align: center;
+        @media (min-width: 516px) {
+            font-size: 3rem;
+        }
+        @media (min-width: 768px) {
+           display: none;
+        }
     }
 `;
 
@@ -360,7 +409,9 @@ export default function ProductSingle({ productData }) {
                 });
                 item.querySelector('.variant-showcase-img').classList.add('variant-showcase-img-active');
                 variantSingles.forEach((item2, index2) => {
-                    if (index2 === index) {
+                    console.log(item.id);
+                    console.log(item2.id);
+                    if (item.id === item2.id) {
                         item2.classList.add('variant-show');
                     } else {
                         item2.classList.remove('variant-show');
@@ -380,9 +431,11 @@ export default function ProductSingle({ productData }) {
         <Content>
             <div className="wrapper">
                 <div className="product-data">
+                    
                     {productData.variants.map((item, index) => {
                         return (
-                            <div className={index === 0 ? 'variant-single variant-show' : 'variant-single'} key={index}>
+                            <div className={index === 0 ? 'variant-single variant-show' : 'variant-single'} id={item.id} key={index}>
+                                <h1 className="mobile-product-title">{productData.title}</h1>
                                 <div className="product-images">
                                     <ul className="image-secondary-group">
                                         {productData.images.map((item1, index) => {
@@ -415,10 +468,30 @@ export default function ProductSingle({ productData }) {
                                     </div>
                                 </div>
                                 <div className="product-content-box">
-                                    <h1>{productData.title}</h1>
+                                    <h1 className="desktop-product-title">{productData.title}</h1>
                                     <div id="variant-id" className="variant-id">{item.id}</div>
                                     {item.option2 ? <h3 className="color-to-search">{item.option2}</h3> : <h3 className="color-to-search">{item.title}</h3>}
                                     <h2 className="price">${item.price}</h2>
+                                    <div className="variant-trigger-wrapper">
+                                        {productData.variants.map((item, index) => {
+                                            return (
+                                                <div className="variant-trigger" id={item.id} key={index}>
+                                                    {item.option1 && !item.option2 ? <div className="variant-color-option">{item.option1}</div> : ''}
+                                                    {item.option1 && item.option2 ? <div className="variant-size-option">{item.option1}</div> : <div className="variant-size-option"></div>}
+                                                    {item.option2 ? <div className="variant-color-option">{item.option2}</div> : ''}
+                                                    {productData.images.map((item1, index1) => {
+                                                        if (item.id === item1.variant_ids[0]) {
+                                                            return (
+                                                                <div className="showcase-img-wrapper" key={index1}>
+                                                                    <Image id="variant-showcase-img" className={index1 === 0 ? 'variant-showcase-img-active variant-showcase-img' : 'variant-showcase-img'} src={item1.src} fill style={{ objectFit: 'cover' }} key={index1} onClick={resetQuantity} />
+                                                                </div>
+                                                            );
+                                                        }
+                                                    })}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                     {item.option2 ? 
                                     <>
                                     <h6>Select a Size</h6>
@@ -451,7 +524,7 @@ export default function ProductSingle({ productData }) {
                     })}
                 </div>
             
-                <div className="variant-trigger-wrapper">
+                {/* <div className="variant-trigger-wrapper">
                     {productData.variants.map((item, index) => {
                         return (
                             <div className="variant-trigger" id={item.id} key={index}>
@@ -470,7 +543,7 @@ export default function ProductSingle({ productData }) {
                             </div>
                         );
                     })}
-                </div>
+                </div> */}
                 
             </div>
         </Content>
