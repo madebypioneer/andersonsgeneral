@@ -73,7 +73,7 @@ export default function ClothingPage({ pageData }) {
                     {pageData.acf.page_link.map((item, index) => {
                         let buttonLink = getButtonLink(item.button.link_to_where, item.button.onsite_link, item.button.offsite_link, item.file_link);
                         return (
-                            <div className="page-link">
+                            <div className="page-link" key={index}>
                                 <div className="image">
                                     <Image src={`${item.image.url}`} alt={`${item.image.alt}`} fill style={{ objectFit: 'cover' }} />
                                 </div>

@@ -209,7 +209,7 @@ export default function About({ pageData }) {
                 <div className="events-wrapper">
                     {pageData.acf.events_section.event.map((item, index) => {
                         return (
-                            <a href={item.link} className="event-link">
+                            <a href={item.link} className="event-link" key={index}>
                                 <Image src={`${item.background_image.url}`} alt={`${item.background_image.alt}`} fill style={{ objectFit: 'cover' }} />
                                 <div className="gradiant"></div>
                                 <h4>{item.title}</h4>
@@ -235,7 +235,7 @@ export default function About({ pageData }) {
                 <div className="team-wrapper">
                     {pageData.acf.team_section.team_member.map((item, index) => {
                         return (
-                            <div className="team-member">
+                            <div className="team-member" key={index}>
                                 <Image src={`${item.headshot.url}`} alt={`${item.headshot.alt}`} width={300} height={250} />
                                 <h4>{item.name}</h4>
                                 <h5>{item.job_title}</h5>

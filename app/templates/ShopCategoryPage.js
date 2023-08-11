@@ -361,7 +361,7 @@ export default function ShopCategoryPage({ pageData }) {
                 <div className="brand-logos">
                     {pageData.acf.brands_section.brand_logo.map((item, index) => {
                         return (
-                            <div className="logo">
+                            <div className="logo" key={index}>
                                 <Image src={`${item.logo.url}`} alt={`${item.logo.alt}`} width={128} height={128} />
                             </div>
                         )
