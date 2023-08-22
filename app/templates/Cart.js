@@ -100,6 +100,7 @@ function toggleCartHasItems() {
     const cartEmpty = document.querySelector('.cart-empty');
     const explainBar = document.querySelector('.explain-bar');
     const checkoutWrapper = document.querySelector('.checkout-wrapper');
+    const topCheckoutButton = document.querySelector('#top-checkout-button');
 
     console.log(localStorage.getItem('cartItemList') !== null)
 
@@ -108,22 +109,48 @@ function toggleCartHasItems() {
         cartEmpty.classList.remove('hidden');
         explainBar.classList.add('hidden');
         checkoutWrapper.classList.add('hidden');
+        topCheckoutButton.classList.add('hidden');
     } else {
         cartHasItems.classList.add('cart-has-items-active');
         cartEmpty.classList.add('hidden');
         explainBar.classList.remove('hidden');
         checkoutWrapper.classList.remove('hidden');
+        topCheckoutButton.classList.remove('hidden');
     }
 }
 
+function goBack() {
+    window.history.back();
+}
+
 const Content = styled.div`
+    .cart-function-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        padding: 100px 8px 25px 8px;
+        button {
+            width: 100%;
+            @media (min-width: 430px) {
+                width: 49%;
+                flex-wrap: no-wrap;
+            }
+        }
+        @media (min-width: 992px) {
+            display: none;
+        }
+    }
     .wrapper {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         max-width: 1200px;
         margin: 0 auto;
-        padding: 100px 8px 0 8px;
+        padding: 0px 8px 0 8px;
+        @media (min-width: 992px) {
+           padding: 100px 8px 0 8px;
+        }
         h1 {
             font-family: franklin-gothic-urw-cond,sans-serif;
             text-transform: uppercase;
@@ -211,6 +238,7 @@ const CartStyle = styled.div`
         display: grid;
         grid-template-columns: repeat(12, 1fr);
         align-items: start;
+        gap: 15px;
         width: 100%;
         max-width: 1200px;
         padding: 30px 15px 30px 15px;
@@ -226,7 +254,7 @@ const CartStyle = styled.div`
             display: none;
         }
         .variant-img {
-            grid-column: 1 / 13;
+            grid-column: 1 / 5;
             width: 120px;
             height: 120px;
             object-fit: cover;
@@ -235,8 +263,8 @@ const CartStyle = styled.div`
             }
         }
         .cart-item-content {
-            grid-column: 1 / 13;
-            padding: 20px 0 20px 0;
+            grid-column: 5 / 13;
+            padding: 0px 0 20px 0;
             @media (min-width: 992px) {
                 grid-column: 2 / 6;
                 padding: 0 20px 0 20px;
@@ -295,24 +323,30 @@ const CartStyle = styled.div`
             }
         }
         .cart-item-price {
+            display: none;
             grid-column: 1 / 13;
             font-family: franklin-gothic-urw,sans-serif;
             font-size: 16px;
             color: #091511;
             @media (min-width: 992px) {
+                display: block;
                 grid-column: 9 / 11;
             }
         }
         .cart-item-total {
             grid-column: 1 / 13;
-            
+            text-align: right;
             font-family: franklin-gothic-urw,sans-serif;
             font-size: 16px;
             color: #091511;
             font-weight: bold;
+            margin-top: -45px;
+            pointer-events: none;
             @media (min-width: 992px) {
                 grid-column: 11 / 13;
+                margin-top: 0px;
                 margin-left: auto;
+                text-align: left;
             }
         }
     }
@@ -467,6 +501,10 @@ export default function Cart({ pageData, products }) {
     return (
         <>
         <Content>
+            <div className="cart-function-buttons">
+                <button className="outline-button" onClick={goBack}>Continue Shopping</button>
+                <button id="top-checkout-button" className="green-button" onClick={handleCheckout}>Checkout</button>
+            </div>
             <div className="wrapper">
               <h1>{pageData.acf.page_title}</h1>
               <div className="cart-empty">

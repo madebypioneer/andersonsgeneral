@@ -455,6 +455,26 @@ button {
   transition: 0.25s;
 }
 
+.outline-button {
+  display: inline;
+  background-color: transparent;
+  border: 1px solid #285C4D;
+  font-family: 'franklin-gothic-urw', sans-serif;
+  font-size: .875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #285C4D;
+  padding: 0.6rem 2rem 0.6rem 2rem;
+  border-radius: 0.5rem;
+  transition: 0.25s;
+}
+
+.outline-button:hover {
+  background-color: #285C4D;
+  color: #ffffff;
+  transition: 0.25s;
+}
+
 .dark-green-button {
   display: inline;
   background-color: #19382F;
