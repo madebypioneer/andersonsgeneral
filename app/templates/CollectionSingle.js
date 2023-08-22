@@ -7,6 +7,25 @@ import styled from 'styled-components';
 import { Splide, SplideTrack, SplideSlide, Slides } from '@splidejs/react-splide';
 import SearchBox from '../components/SearchBox.js';
 
+function toggleFilters() {
+    let sidebar = document.querySelector('.sidebar');
+    let breadcrumbs = document.querySelector('.breadcrumbs');
+    let sidebarFilterButton = document.querySelector('.mobile-filter-toggle');
+    if (sidebarFilterButton.innerText == "FILTER") {
+        sidebar.style.display = 'block';
+        sidebarFilterButton.innerText = 'CLOSE FILTERS';
+        sidebarFilterButton.style.backgroundColor = '#285C4D';
+        sidebarFilterButton.style.color = '#ffffff';
+        breadcrumbs.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        sidebar.style.display = 'none';
+        sidebarFilterButton.innerText = 'FILTER';
+        sidebarFilterButton.style.backgroundColor = 'transparent';
+        sidebarFilterButton.style.color = '#285C4D';
+        breadcrumbs.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
 
 const Content = styled.div`
     padding: 100px 8px 200px 8px;
@@ -26,13 +45,31 @@ const Content = styled.div`
                 padding-bottom: 5px;
             }
         }
+        .mobile-filter-toggle {
+            grid-column: 1 / 13;
+            width: 100%;
+            max-width: 500px;
+            font-family: franklin-gothic-urw-cond,sans-serif;
+            text-transform: uppercase;
+            text-align: center;
+            font-size: 18px;
+            color: #285C4D;
+            border: 2px solid #285C4D;
+            border-radius: 8px;
+            margin: 0 auto 25px auto;
+            @media (min-width: 768px) {
+                display: none;
+            }
+        }
         .sidebar {
+            display: none;
             grid-column: 1 / 13;
             width: 100%;
             max-width: 400px;
             margin: 0 auto;
             padding-bottom: 80px;
             @media (min-width: 768px) {
+                display: block !important;
                 grid-column: 1 / 4;
                 padding-bottom: 0px;
             }
@@ -214,7 +251,7 @@ const Content = styled.div`
                 font-size: 1.2rem;
                 font-weight: 700;
                 color: #222222;
-                padding: 30px 0 30px 0;
+                padding: 50px 0 30px 0;
             }
             h3 {
                 font-family: 'franklin-gothic-urw', sans-serif;
@@ -235,6 +272,17 @@ const Content = styled.div`
             }
             .product-filter-text {
                 display: none;
+            }
+            .splide__pagination {
+                bottom: -25px;
+            }
+            .splide__pagination__page {
+                background-color: transparent;
+                border: 1px solid #B79452;
+                margin: 5px;
+            }
+            .is-active {
+                background-color: #B79452;
             }
         }
         .other-collections {
@@ -405,7 +453,9 @@ export default function CollectionSingle({ productData, allProducts, collectionD
             <div className="breadcrumbs">
                 <h6>Anderson&apos;s Gear / <span>{productData[0].product_type}</span></h6>
             </div>
+
             <div className="sidebar">
+
                 <div className="search-input-box">
                     <SearchBox data={allProducts} />
                 </div>
@@ -490,6 +540,11 @@ export default function CollectionSingle({ productData, allProducts, collectionD
                 ''}
                 
             </div>
+
+            <button className="mobile-filter-toggle" onClick={toggleFilters}>
+                FILTER
+            </button>
+
             <div className="product-list">
                 {productData.map((item, index) => {
                     let productTags = [];
@@ -505,8 +560,8 @@ export default function CollectionSingle({ productData, allProducts, collectionD
                                 {
                                     type: 'slide',
                                     perPage: 1,
-                                    pagination: false,
-                                    arrows: true
+                                    pagination: true,
+                                    arrows: false
                                 } 
                             }
                                 id="slider-image-box"
@@ -514,12 +569,15 @@ export default function CollectionSingle({ productData, allProducts, collectionD
                             >
                                 <SplideTrack>
                                     {item.images.map((item2, index) => {
-                                        return (
-                                            <SplideSlide key={index} className="slide-single-img splide__slide">
-                                                <div id={item2.id} className="slide-image-id"></div>
-                                                <Image src={item2.src} alt={item2.alt} fill style={{ objectFit: 'cover' }} />
-                                            </SplideSlide>
-                                        );
+                                        if (index < 8) {
+                                            return (
+                                                <SplideSlide key={index} className="slide-single-img splide__slide">
+                                                    <div id={item2.id} className="slide-image-id"></div>
+                                                    <Image src={item2.src} alt={item2.alt} fill style={{ objectFit: 'cover' }} />
+                                                </SplideSlide>
+                                            );
+                                        }
+                                        
                                     })}
                                 </SplideTrack>
                             </Splide>
@@ -531,7 +589,7 @@ export default function CollectionSingle({ productData, allProducts, collectionD
                             }
                             <div className="product-text-content">
                                 <h2>{item.title}</h2>
-                                <h3>{item.variants[0].price}</h3>
+                                <h3>${item.variants[0].price}</h3>
                                 <a href={`${'/shop/' + item.handle}`}>
                                         <button className="brown-button">See More</button>
                                 </a>

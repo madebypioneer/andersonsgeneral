@@ -101,7 +101,6 @@ const HeaderStyle = styled.header`
     }
     .mobile-menu-toggle {
         opacity: 1 !important;
-        pointer-events: auto !important;
         height: 100% !important;
         padding-top: 8px !important;
     }
@@ -109,6 +108,7 @@ const HeaderStyle = styled.header`
         pointer-events: initial !important;
         opacity: 1 !important;
         transform: scale(1.0) !important;
+        z-index: 999;
         transition: .25s;
     }
     .active-menu-toggle {
@@ -122,6 +122,9 @@ const HeaderStyle = styled.header`
         opacity: 1 !important;
         transform: scale(1.0) !important;
         transition: .25s;
+        .mobile-menu-toggle {
+            pointer-events: auto !important;
+        }
     }
 `;
 
@@ -353,12 +356,11 @@ const MobileMenu = styled.div`
     transform: scale(1.1);
     background-color: #092615;
     padding: 48px 0px 0px 0px;
-    z-index: 998;
+    z-index: -1;
     transition: .25s;
     .mobile-items {
         position: relative;
         padding-bottom: 200px;
-        z-index: 998;
     }
     .mobile-menu-header {
         display: grid;
