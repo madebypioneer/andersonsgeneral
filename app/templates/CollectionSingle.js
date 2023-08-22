@@ -244,6 +244,9 @@ const Content = styled.div`
             }
             .product-text-content {
                 padding: 0 8px 0 8px;
+                button {
+                    border-width: 0px;
+                }
             }
             h2 {
                 font-family: 'franklin-gothic-urw', sans-serif;

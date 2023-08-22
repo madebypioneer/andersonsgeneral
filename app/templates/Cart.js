@@ -258,6 +258,7 @@ const CartStyle = styled.div`
                 font-size: 14px;
                 color: #37806B;
                 text-decoration: underline;
+                border-width: 0px;
                 &:hover {
                     cursor: pointer;
                 }

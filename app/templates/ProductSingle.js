@@ -467,6 +467,7 @@ const Content = styled.div`
     }
     .add-to-cart-button {
         width: 100%;
+        border-width: 0px;
     }
 `;
 
