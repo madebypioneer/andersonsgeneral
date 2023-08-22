@@ -573,7 +573,10 @@ export default function CollectionSingle({ productData, allProducts, collectionD
                                             return (
                                                 <SplideSlide key={index} className="slide-single-img splide__slide">
                                                     <div id={item2.id} className="slide-image-id"></div>
+                                                    <a href={`${'/shop/' + item.handle}`}>
                                                     <Image src={item2.src} alt={item2.alt} fill style={{ objectFit: 'cover' }} />
+                                                    </a>
+                                                    
                                                 </SplideSlide>
                                             );
                                         }
