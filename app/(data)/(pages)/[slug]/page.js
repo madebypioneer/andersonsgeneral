@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import ThankYou from "../../../templates/ThankYou.js";
 import Cart from "../../../templates/Cart.js";
 import ClothingPage from "../../../templates/ClothingPage.js";
+import OutdoorsPage from "../../../templates/OutdoorsPage.js";
 import ShopCategoryPage from "../../../templates/ShopCategoryPage.js";
 import About from "../../../templates/About.js";
 import Contact from "../../../templates/Contact.js";
@@ -64,6 +65,10 @@ export default async function Page({ params: { slug } }) {
   } else if (page.template == "templates/clothing.php") {
     return (
       <ClothingPage pageData={page} />
+    );
+  } else if (page.template == "templates/outdoors.php") {
+    return (
+      <OutdoorsPage pageData={page} />
     );
   } else if (page.template == "templates/shop-category-page.php") {
     return (
