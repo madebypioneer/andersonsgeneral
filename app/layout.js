@@ -3,6 +3,7 @@ import './styles/global.css';
 import Header from "./components/header.js";
 import Footer from "./components/footer.js";
 import StyledComponentsRegistry from '../lib/registry';
+import Script from 'next/script';
 
 async function getSiteData() {
   const res = await fetch(apiUrl + `/site-data/all`)
@@ -159,12 +160,26 @@ export default async function RootLayout({ children, page }) {
         <link rel="stylesheet" href="https://use.typekit.net/udk0oir.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.0.7/dist/css/splide.min.css"></link>
         <script src="https://services.cognitoforms.com/s/IG83lPQs7UKU2FDeP--HlA"></script>
+        <Script id="google-tag-manager" strategy="afterInteractive">
+          {`
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','${process.env.GTM_ID}');
+          `}
+        </Script>
       </head>
       <StyledComponentsRegistry>
         <body>
           <Header logos={logos} socialMedia={socialMedia} phoneNumbers={phoneNumbers} physicalAddresses={physicalAddresses} storeHours={storeHours} leftMenu={leftMenu} rightMenu={rightMenu} mobileMenu={mobileMenu} />
             {children}
           <Footer logos={logos} socialMedia={socialMedia} phoneNumbers={phoneNumbers} physicalAddresses={physicalAddresses} storeHours={storeHours} footerMenuOne={footerMenuOne} footerMenuTwo={footerMenuTwo} footerParagraph={footerParagraph} siteName={siteInfo.site_name} />
+          <noscript
+            dangerouslySetInnerHTML={{
+              __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=${process.env.GTM_ID}" height="0" width="0" style="display: none; visibility: hidden;" />`,
+            }}
+          />
         </body>
       </StyledComponentsRegistry>
     </html>
