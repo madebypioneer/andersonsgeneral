@@ -118,7 +118,7 @@ const GearSection = styled.div`
 
 export default function ClothingPage({ pageData }) {
 
-    let gearButtonLink = getButtonLink(pageData.acf.andersons_gear_section.button.link_to_where, pageData.acf.andersons_gear_section.button.onsite_link, pageData.acf.andersons_gear_section.button.offsite_link, pageData.acf.andersons_gear_section.file_link);
+    let gearButtonLink = getButtonLink(pageData.acf.andersons_gear_section.button.link_to_where, pageData.acf.andersons_gear_section.button.onsite_link, pageData.acf.andersons_gear_section.button.offsite_link, pageData.acf.andersons_gear_section.button.file_link);
 
     const keepBrowsing = pageData.global_sections[4];
     const productBoxes = pageData.global_sections[1];
