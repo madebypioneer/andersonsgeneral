@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://www.greenzero.dev
+Host: https://www.andersonsgeneral.com
 
 # Sitemaps
-Sitemap: https://www.greenzero.dev/sitemap.xml
+Sitemap: https://www.andersonsgeneral.com/sitemap.xml
