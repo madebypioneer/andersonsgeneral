@@ -5,6 +5,7 @@ import Cart from "../../../templates/Cart.js";
 import ClothingPage from "../../../templates/ClothingPage.js";
 import OutdoorsPage from "../../../templates/OutdoorsPage.js";
 import ShopCategoryPage from "../../../templates/ShopCategoryPage.js";
+import ShopParent from "../../../templates/ShopParent.js";
 import About from "../../../templates/About.js";
 import Contact from "../../../templates/Contact.js";
 
@@ -73,6 +74,10 @@ export default async function Page({ params: { slug } }) {
   } else if (page.template == "templates/shop-category-page.php") {
     return (
       <ShopCategoryPage pageData={page} />
+    );
+  } else if (page.template == "templates/shop.php") {
+    return (
+      <ShopParent pageData={page} />
     );
   } else if (page.template == "templates/about.php") {
     return (

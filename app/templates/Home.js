@@ -80,10 +80,12 @@ const OurHistory = styled.div`
     gap: 50px;
     max-width: 900px;
     margin: 0 auto;
-    padding: 50px 8px 50px 8px;
+    padding: 50px 8px 100px 8px;
+    text-align: center;
     @media (min-width: 768px) {
         grid-template-columns: repeat(2, 1fr);
         padding: 100px 8px 100px 8px;
+        text-align: left;
     }
     .content {
         position: relative;
@@ -126,7 +128,7 @@ const NewArrivals = styled.div`
    max-width: 1000px;
    margin: 0 auto;
    text-align: center;
-   padding: 50px 8px 0 8px;
+   padding: 50px 8px 50px 8px;
    overflow: hidden;
    @media (min-width: 768px) {
     padding: 0px 8px 0 8px;
@@ -156,9 +158,69 @@ const NewArrivals = styled.div`
         display: flex;
         justify-content: center;
         align-items: center;
-        padding-bottom: 200px;
+        padding-bottom: 0px;
         gap: 20px;
     }
+`;
+
+const ShopCta = styled.div`
+    margin: 0 8px 100px 8px;
+    .wrapper {
+        position: relative;
+        max-width: 1000px;
+        background-color: #092615;
+        padding: 45px 50px 50px 50px;
+        margin: 0 auto;
+        overflow: hidden;
+        color: #f3ede2;
+        border-radius: 15px;
+    }
+    h2 {
+        position: relative;
+        font-family: modesto-condensed,serif;
+        font-size: 4rem;
+        text-transform: uppercase;
+        padding-bottom: 30px;
+        text-align: center;
+        z-index: 2;
+        @media (min-width: 768px) {
+            text-align: left;
+        }
+    }
+    a {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        margin: 0 auto;
+        z-index: 2;
+        @media (min-width: 768px) {
+            display: block;
+        }
+    }
+    .bk-img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        bottom: 0px;
+        right: 0px;
+        z-index: 1;
+        @media (min-width: 768px) {
+            top: -40px;
+            height: auto;
+            object-fit: contain;
+            right: -200px;
+            transform: rotate(10deg);
+        }
+        @media (min-width: 992px) {
+            top: -80px;
+            right: -250px;
+        }
+    }
+    @media (min-width: 768px) {
+    
+    }
+   
 `;
 
 // #endregion Styles
@@ -166,6 +228,8 @@ const NewArrivals = styled.div`
 export default function Home({ pageData }) {
 
     let heroButtonLink = getButtonLink(pageData.acf.hero_section.button.link_to_where, pageData.acf.hero_section.button.onsite_link, pageData.acf.hero_section.button.offsite_link, pageData.acf.hero_section.button.file_link);
+
+    let gearButtonLink = getButtonLink(pageData.acf.gear_section.button.link_to_where, pageData.acf.gear_section.button.onsite_link, pageData.acf.gear_section.button.offsite_link, pageData.acf.gear_section.button.file_link);
 
     const productBoxes = pageData.global_sections[1];
     const newArrivals = pageData.global_sections[0];
@@ -194,6 +258,16 @@ export default function Home({ pageData }) {
                 <ProductBoxes productBoxes={productBoxes} />
             </VisitUs>
 
+            <ShopCta>
+                <div className="wrapper">
+                    <Image className="bk-img" src={`${pageData.acf.gear_section.background_image.url}`} alt={`${pageData.acf.gear_section.background_image.alt}`} width={800} height={800} />
+                    <h2>{pageData.acf.gear_section.title}</h2>
+                    <a href={gearButtonLink}>
+                        <div className="brown-button">{pageData.acf.gear_section.button.text}</div>
+                    </a>
+                </div>
+            </ShopCta>
+
             <OurHistory>
                 <div className="content">
                     <Image src={`${pageData.acf.our_history_section.badge.url}`} alt={`${pageData.acf.our_history_section.badge.alt}`} width={304} height={306} />
@@ -205,7 +279,7 @@ export default function Home({ pageData }) {
                 </div>
             </OurHistory>
 
-            {/* <NewArrivals>
+            <NewArrivals>
                 <h3>{newArrivals.acf.title}</h3>
                 <p>{newArrivals.acf.paragraph}</p>
                 <ElfsightWidget widgetID="f87b6672-379e-4cc1-a068-12ec2e64a1a5" />
@@ -218,7 +292,7 @@ export default function Home({ pageData }) {
                         <svg fill="#285C4D" xmlns="http://www.w3.org/2000/svg" height="3em" viewBox="0 0 448 512"><path d="M400 32H48A48 48 0 0 0 0 80v352a48 48 0 0 0 48 48h137.25V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.27c-30.81 0-40.42 19.12-40.42 38.73V256h68.78l-11 71.69h-57.78V480H400a48 48 0 0 0 48-48V80a48 48 0 0 0-48-48z"/></svg>
                     </a>
                 </div>
-            </NewArrivals> */}
+            </NewArrivals>
 
             <StayInTheKnow stayInTheKnow={stayInTheKnow} />
 
