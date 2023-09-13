@@ -86,7 +86,6 @@ const GearSection = styled.div`
             position: absolute;
             top: -100px;
             left: -120px;
-            border-radius: 15px;
         }
         h2 {
             position: relative;
@@ -107,6 +106,9 @@ const GearSection = styled.div`
         position: relative;
         width: 100%;
         height: 480px;
+        img {
+            border-radius: 15px;
+        }
         @media (min-width: 768px) {
             order: 2;
         }
@@ -156,7 +158,7 @@ export default function ClothingPage({ pageData }) {
                     </a>
                 </div>
                 <div className="image">
-                    <Image src={`${pageData.acf.andersons_gear_section.image.url}`} alt={`${pageData.acf.andersons_gear_section.image.alt}`} fill style={{ objectFit: 'contain' }} />
+                    <Image src={`${pageData.acf.andersons_gear_section.image.url}`} alt={`${pageData.acf.andersons_gear_section.image.alt}`} fill style={{ objectFit: 'cover' }} />
                 </div>
             </GearSection>
 
