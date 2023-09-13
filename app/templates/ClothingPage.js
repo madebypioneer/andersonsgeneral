@@ -86,6 +86,7 @@ const GearSection = styled.div`
             position: absolute;
             top: -100px;
             left: -120px;
+            border-radius: 15px;
         }
         h2 {
             position: relative;
