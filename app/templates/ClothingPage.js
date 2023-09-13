@@ -145,7 +145,7 @@ export default function ClothingPage({ pageData }) {
                 </div>
             </Content>
 
-            {/* <GearSection>
+            <GearSection>
                 <div className="content">
                     <Image src={`${pageData.acf.andersons_gear_section.badge.url}`} alt={`${pageData.acf.andersons_gear_section.badge.alt}`} width={304} height={306} />
                     <h2>{pageData.acf.andersons_gear_section.title}</h2>
@@ -157,7 +157,7 @@ export default function ClothingPage({ pageData }) {
                 <div className="image">
                     <Image src={`${pageData.acf.andersons_gear_section.image.url}`} alt={`${pageData.acf.andersons_gear_section.image.alt}`} fill style={{ objectFit: 'contain' }} />
                 </div>
-            </GearSection> */}
+            </GearSection>
 
             <KeepBrowsing keepBrowsing={keepBrowsing} />
 
