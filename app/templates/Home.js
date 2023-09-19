@@ -258,7 +258,7 @@ export default function Home({ pageData }) {
                 <ProductBoxes productBoxes={productBoxes} />
             </VisitUs>
 
-            <ShopCta>
+            {/* <ShopCta>
                 <div className="wrapper">
                     <Image className="bk-img" src={`${pageData.acf.gear_section.background_image.url}`} alt={`${pageData.acf.gear_section.background_image.alt}`} width={800} height={800} />
                     <h2>{pageData.acf.gear_section.title}</h2>
@@ -266,7 +266,7 @@ export default function Home({ pageData }) {
                         <div className="brown-button">{pageData.acf.gear_section.button.text}</div>
                     </a>
                 </div>
-            </ShopCta>
+            </ShopCta> */}
 
             <OurHistory>
                 <div className="content">
