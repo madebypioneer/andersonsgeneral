@@ -192,6 +192,35 @@ img.target.classList.add('variant-secondary-img-active');
     }
 }
 
+function nextShowcaseImg() {
+    const currentShowcaseImg = document.querySelector('.variant-secondary-img-active');
+    if (currentShowcaseImg.nextElementSibling) {
+        currentShowcaseImg.nextElementSibling.classList.add('variant-secondary-img-active');
+        currentShowcaseImg.nextElementSibling.click();
+        currentShowcaseImg.classList.remove('variant-secondary-img-active');
+    }
+    else {
+        currentShowcaseImg.parentElement.childNodes[0].classList.add('variant-secondary-img-active');
+        currentShowcaseImg.parentElement.childNodes[0].click();
+        currentShowcaseImg.classList.remove('variant-secondary-img-active');
+    }
+}
+
+function prevShowcaseImg() {
+    const currentShowcaseImg = document.querySelector('.variant-secondary-img-active');
+    if (currentShowcaseImg.previousElementSibling) {
+        currentShowcaseImg.previousElementSibling.classList.add('variant-secondary-img-active');
+        currentShowcaseImg.previousElementSibling.click();
+        currentShowcaseImg.classList.remove('variant-secondary-img-active');
+    }
+    else {
+        let lastShowcaseImgIndex = currentShowcaseImg.parentElement.childNodes.length - 1;
+        currentShowcaseImg.parentElement.childNodes[lastShowcaseImgIndex].classList.add('variant-secondary-img-active');
+        currentShowcaseImg.parentElement.childNodes[lastShowcaseImgIndex].click();
+        currentShowcaseImg.classList.remove('variant-secondary-img-active');
+    }
+}
+
 const Content = styled.div`
     .wrapper {
         position: relative;
@@ -349,6 +378,23 @@ const Content = styled.div`
                         min-height: 700px;
                         height: 700px;
                         max-height: 700px;
+                    }
+                    .img-browse-arrows {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        display: flex;
+                        justify-content: space-between;
+                        width: 100%;
+                        padding: 0 60px 10px 60px;
+                    }
+                    .img-browse-arrow {
+                        width: 32px;
+                        height: 32px;
+                        &:hover {
+                            cursor: pointer;
+                            fill: #204a3e;
+                        }
                     }
                 }
             }
@@ -549,7 +595,10 @@ export default function ProductSingle({ productData }) {
                                         <img id="variant-showcase-img" className="variant-showcase-img-current" src={productData.image.src} key={index} />
                                         
                                         }
-
+                                        <div className="img-browse-arrows">
+                                            <svg id="img-browse-prev" className="img-browse-arrow" fill="#285c4d" onClick={prevShowcaseImg} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">{/* Font Awesome Pro 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. */}<path d="M512 256A256 256 0 1 0 0 256a256 256 0 1 0 512 0zM231 127c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-71 71L376 232c13.3 0 24 10.7 24 24s-10.7 24-24 24l-182.1 0 71 71c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L119 273c-9.4-9.4-9.4-24.6 0-33.9L231 127z"/></svg>
+                                            <svg id="img-browse-next" className="img-browse-arrow" fill="#285c4d" onClick={nextShowcaseImg} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">{/* Font Awesome Pro 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. */}<path d="M0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM281 385c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l71-71L136 280c-13.3 0-24-10.7-24-24s10.7-24 24-24l182.1 0-71-71c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0L393 239c9.4 9.4 9.4 24.6 0 33.9L281 385z"/></svg>
+                                        </div>
                                     </div>
                                     <Splide hasTrack={ false }
                                     options={ 

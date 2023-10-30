@@ -21,6 +21,8 @@ const cartForCheckoutPrepared = [];
 
 const handleCheckout = async () => {
 
+    let localStorageCartRaw = window.localStorage.getItem("cartItemList");
+
     let localStorageCart = JSON.parse(window.localStorage.getItem("cartItemList"));
 
     let cartItems = document.querySelectorAll('.cart-item');
@@ -35,12 +37,14 @@ const handleCheckout = async () => {
     });
 
     for (let i = 0; i < localStorageCart.length; i++) {
-      
         // Add the joined elements to the new array
         cartForCheckoutPrepared.push(localStorageCart[i]);
     }
     // localStorage.removeItem("cartItemList");
     window.location.href = `https://andersons-general-store-statesboro.myshopify.com/cart/` + cartForCheckoutPrepared;
+
+    localStorage.removeItem('cartItemList');
+
 };
 
 const removeCartItem = async (cartItemElement, removalId) => {
