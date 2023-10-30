@@ -533,6 +533,7 @@ export default function ProductSingle({ productData }) {
        
         const variantTriggers = document.querySelectorAll('.variant-trigger');
         const variantSingles = document.querySelectorAll('.variant-single');
+        const variantSecondaryImgsAll = document.querySelectorAll('.variant-secondary-img');
         variantTriggers.forEach((item, index) => {
             item.addEventListener('click', (clickedItem) => {
                 variantTriggers.forEach((item1) => {
@@ -543,7 +544,12 @@ export default function ProductSingle({ productData }) {
                 item.querySelector('.variant-showcase-img').classList.add('variant-showcase-img-active');
                 variantSingles.forEach((item2, index2) => {
                     if (item.id === item2.id) {
+                        let variantSingleActiveImg = item2.querySelector('.image-secondary-group').childNodes[0];
                         item2.classList.add('variant-show');
+                        variantSecondaryImgsAll.forEach((item3) => {
+                            item3.classList.remove('variant-secondary-img-active');
+                        });
+                        variantSingleActiveImg.classList.add('variant-secondary-img-active');
                     } else {
                         item2.classList.remove('variant-show');
                     }
