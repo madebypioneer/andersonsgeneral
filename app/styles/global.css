@@ -524,6 +524,13 @@ label {
   text-transform: uppercase !important;
 }
 
+legend {
+  font-family: 'franklin-gothic-urw',sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+}
+
 input {
 
 }

@@ -8,6 +8,7 @@ import ShopCategoryPage from "../../../templates/ShopCategoryPage.js";
 import ShopParent from "../../../templates/ShopParent.js";
 import About from "../../../templates/About.js";
 import Contact from "../../../templates/Contact.js";
+import CorporateBoot from "../../../templates/CorporateBoot.js";
 
 async function getAllPages() {
   const res = await fetch(apiUrl + `/pages/all`)
@@ -86,6 +87,10 @@ export default async function Page({ params: { slug } }) {
   } else if (page.template == "templates/contact.php") {
     return (
       <Contact pageData={page} />
+    );
+  } else if (page.template == "templates/corporate-boot-program.php") {
+    return (
+      <CorporateBoot pageData={page} />
     );
   } else {
     return (null);
