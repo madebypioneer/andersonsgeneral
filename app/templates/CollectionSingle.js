@@ -330,6 +330,12 @@ const Content = styled.div`
 
 export default function CollectionSingle({ productData, allProducts, collectionData }) {
 
+    productData.sort((a, b) => {
+        const dateA = new Date(a.updated_at);
+        const dateB = new Date(b.updated_at);
+        return dateB - dateA;
+    });
+
     let productTags = [];
 
     function assembleTags(tag) {
@@ -555,72 +561,75 @@ export default function CollectionSingle({ productData, allProducts, collectionD
                     productTagsToAdd.forEach((item1, index) => {
                         productTags.push(item1)
                     })
-                    return (
-                        <div className="product" key={index}>
-                            {item.images.length > 0 ?
-                            <Splide hasTrack={ false }
-                            options={ 
-                                {
-                                    type: 'slide',
-                                    perPage: 1,
-                                    pagination: true,
-                                    arrows: false
-                                } 
-                            }
-                                id="slider-image-box"
-                                className=""
-                            >
-                                <SplideTrack>
-                                    {item.images.map((item2, index) => {
-                                        if (index < 8) {
+                    if (item.status == 'active') {
+                        return (
+                            <div className="product" key={index}>
+                                {item.images.length > 0 ?
+                                <Splide hasTrack={ false }
+                                options={ 
+                                    {
+                                        type: 'slide',
+                                        perPage: 1,
+                                        pagination: true,
+                                        arrows: false
+                                    } 
+                                }
+                                    id="slider-image-box"
+                                    className=""
+                                >
+                                    <SplideTrack>
+                                        {item.images.map((item2, index) => {
+                                            if (index < 8) {
+                                                return (
+                                                    <SplideSlide key={index} className="slide-single-img splide__slide">
+                                                        <div id={item2.id} className="slide-image-id"></div>
+                                                        <a href={`${'/shop/' + item.handle}`}>
+                                                        <Image src={item2.src} alt={item2.alt} fill style={{ objectFit: 'cover' }} />
+                                                        </a>
+                                                        
+                                                    </SplideSlide>
+                                                );
+                                            }
+                                            
+                                        })}
+                                    </SplideTrack>
+                                </Splide>
+    
+                                : 
+                                
+                                <div className="slide-single-img"></div>
+                                
+                                }
+                                <div className="product-text-content">
+                                    <h2>{item.title}</h2>
+                                    <h3>${item.variants[0].price}</h3>
+                                    <a href={`${'/shop/' + item.handle}`}>
+                                            <button className="brown-button">See More</button>
+                                    </a>
+                                </div>
+                                <ul id="value-size-color-pair-list" className="product-filter-text">
+                                    {item.variants.map((item1, index) => {
+                                        if (item1.inventory_quantity > 0) {
                                             return (
-                                                <SplideSlide key={index} className="slide-single-img splide__slide">
-                                                    <div id={item2.id} className="slide-image-id"></div>
-                                                    <a href={`${'/shop/' + item.handle}`}>
-                                                    <Image src={item2.src} alt={item2.alt} fill style={{ objectFit: 'cover' }} />
-                                                    </a>
-                                                    
-                                                </SplideSlide>
-                                            );
+                                                <li id="value-size-color-pair" key={index}>
+                                                    {item1.title}
+                                                </li>
+                                                
+                                            )
                                         }
-                                        
                                     })}
-                                </SplideTrack>
-                            </Splide>
-
-                            : 
-                            
-                            <div className="slide-single-img"></div>
-                            
-                            }
-                            <div className="product-text-content">
-                                <h2>{item.title}</h2>
-                                <h3>${item.variants[0].price}</h3>
-                                <a href={`${'/shop/' + item.handle}`}>
-                                        <button className="brown-button">See More</button>
-                                </a>
-                            </div>
-                            <ul id="value-size-color-pair-list" className="product-filter-text">
-                                {item.variants.map((item1, index) => {
-                                    if (item1.inventory_quantity > 0) {
+                                    {productTags.map((item1, index) => {
                                         return (
                                             <li id="value-size-color-pair" key={index}>
-                                                {item1.title}
+                                                {item1}
                                             </li>
-                                            
                                         )
-                                    }
-                                })}
-                                {productTags.map((item1, index) => {
-                                    return (
-                                        <li id="value-size-color-pair" key={index}>
-                                            {item1}
-                                        </li>
-                                    )
-                                })}
-                            </ul>
-                        </div>
-                    )
+                                    })}
+                                </ul>
+                            </div>
+                        )
+                    }
+                    
                 })}
             </div>
             <div className="other-collections">
