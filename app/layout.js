@@ -108,7 +108,7 @@ export default async function RootLayout({ children, page }) {
   {Object.keys(menu).map((key) => {
       if (menu[key].menu == "left-menu") {
           leftMenu.push(
-              {"id": menu[key].id, "parent_id": menu[key].parent_id, "title": menu[key].title, "url": menu[key].url, "children": menu[key].children},
+              {"id": menu[key].id, "parent_id": menu[key].parent_id, "title": menu[key].title, "url": menu[key].url, "children": menu[key].children, "position": menu[key].position},
           )
       }
   })}
@@ -116,7 +116,7 @@ export default async function RootLayout({ children, page }) {
   {Object.keys(menu).map((key) => {
     if (menu[key].menu == "right-menu") {
         rightMenu.push(
-            {"id": menu[key].id, "parent_id": menu[key].parent_id, "title": menu[key].title, "url": menu[key].url, "children": menu[key].children},
+            {"id": menu[key].id, "parent_id": menu[key].parent_id, "title": menu[key].title, "url": menu[key].url, "children": menu[key].children, "position": menu[key].position},
         )
     }
   })}
@@ -124,7 +124,7 @@ export default async function RootLayout({ children, page }) {
   {Object.keys(menu).map((key) => {
     if (menu[key].menu == "mobile-menu") {
         mobileMenu.push(
-            {"id": menu[key].id, "parent_id": menu[key].parent_id, "title": menu[key].title, "url": menu[key].url, "children": menu[key].children},
+            {"id": menu[key].id, "parent_id": menu[key].parent_id, "title": menu[key].title, "url": menu[key].url, "children": menu[key].children, "position": menu[key].position},
         )
     }
   })}
@@ -132,7 +132,7 @@ export default async function RootLayout({ children, page }) {
   {Object.keys(menu).map((key) => {
     if (menu[key].menu == "footer-menu-1") {
         footerMenuOne.push(
-            {"id": menu[key].id, "parent_id": menu[key].parent_id, "title": menu[key].title, "url": menu[key].url, "children": menu[key].children},
+            {"id": menu[key].id, "parent_id": menu[key].parent_id, "title": menu[key].title, "url": menu[key].url, "children": menu[key].children, "position": menu[key].position},
         )
     }
   })}
@@ -140,10 +140,16 @@ export default async function RootLayout({ children, page }) {
   {Object.keys(menu).map((key) => {
     if (menu[key].menu == "footer-menu-2") {
         footerMenuTwo.push(
-            {"id": menu[key].id, "parent_id": menu[key].parent_id, "title": menu[key].title, "url": menu[key].url, "children": menu[key].children},
+            {"id": menu[key].id, "parent_id": menu[key].parent_id, "title": menu[key].title, "url": menu[key].url, "children": menu[key].children, "position": menu[key].position},
         )
     }
   })}
+
+  leftMenu.sort((a, b) => a.position - b.position);
+  rightMenu.sort((a, b) => a.position - b.position);
+  mobileMenu.sort((a, b) => a.position - b.position);
+  footerMenuOne.sort((a, b) => a.position - b.position);
+  footerMenuTwo.sort((a, b) => a.position - b.position);
 
   return (
     <html>
