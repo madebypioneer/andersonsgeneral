@@ -53,7 +53,7 @@ export default function ThankYou({ pageData }) {
               <h1>{pageData.acf.hero_section.title}</h1>
               <p>{pageData.acf.hero_section.description}</p>
               <a href={heroButtonLink}>
-                  <div className="button">{pageData.acf.hero_section.button.text}</div>
+                  <div className="green-button">{pageData.acf.hero_section.button.text}</div>
               </a>
             </div>
         </Content>
