@@ -9,6 +9,7 @@ import ShopParent from "../../../templates/ShopParent.js";
 import About from "../../../templates/About.js";
 import Contact from "../../../templates/Contact.js";
 import CorporateBoot from "../../../templates/CorporateBoot.js";
+import Apply from "../../../templates/Apply.js";
 
 async function getAllPages() {
   const res = await fetch(apiUrl + `/pages/all`)
@@ -91,6 +92,10 @@ export default async function Page({ params: { slug } }) {
   } else if (page.template == "templates/corporate-boot-program.php") {
     return (
       <CorporateBoot pageData={page} />
+    );
+  } else if (page.template == "templates/apply.php") {
+    return (
+      <Apply pageData={page} />
     );
   } else {
     return (null);
