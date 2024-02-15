@@ -648,7 +648,7 @@ export default function ProductSingle({ productData }) {
                                                         if (item.id === item1.variant_ids[0]) {
                                                             return (
                                                                 <div className="showcase-img-wrapper" key={index1}>
-                                                                    <Image id="variant-showcase-img" className={index1 === 0 ? 'variant-showcase-img-active variant-showcase-img' : 'variant-showcase-img'} src={item1.src} fill style={{ objectFit: 'cover' }} key={index1} onClick={resetQuantityAndSizes} />
+                                                                    <Image id="variant-showcase-img" className={index1 === 0 ? 'variant-showcase-img-active variant-showcase-img' : 'variant-showcase-img'} src={item1.src} fill style={{ objectFit: 'cover' }} key={index1} onClick={resetQuantityAndSizes} quality={25} />
                                                                 </div>
                                                             );
                                                         }
