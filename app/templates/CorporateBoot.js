@@ -63,40 +63,24 @@ const Hero = styled.div`
 `;
 
 const BootBrands = styled.div`
-    .page-link-wrapper {
-        display: grid;
-        grid-template-columns: repeat(1, 1fr);
-        gap: 30px;
-        max-width: 1280px;
+    .wrapper {
+        max-width: 800px;
         margin: 0 auto;
-        padding: 150px 8px 0px 8px;
-        .page-link {
-            text-align: center;
-            padding-bottom: 50px;
-            h2 {
-                font-size: 2rem;
-                text-transform: uppercase;
-                padding: 50px 0 30px 0;
-                @media (min-width: 768px) {
-                    font-size: 3rem;
-                }
+        padding: 100px 16px 50px 16px;
+        ul {
+            display: flex;
+            gap: 50px;
+            flex-wrap: wrap;
+            align-items: center;
+            li {
+                margin: 0 auto;
             }
-            .image {
-                position: relative;
-                width: 100%;
-                height: 440px;
-                img {
-                    border-radius: 15px;
-                }
-            }
-        }
-        @media (min-width: 516px) {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        @media (min-width: 992px) {
-            grid-template-columns: repeat(3, 1fr);
         }
     }
+    @media (min-width: 516px) {
+        
+    }
+        
 `;
 
 const AfterHero = styled.div`
@@ -136,97 +120,6 @@ const BootStyles = styled.div`
                 color #000000;
                 font-size: 20px;
                 padding: 5px 0 5px 0;
-            }
-        }
-    }
-`;
-
-const FirstImageSection = styled.div`
-    .wrapper {
-        position: relative;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 50px 8px 100px 8px;
-        @media (min-width: 516px) {
-            padding: 50px 8px 400px 8px;
-        }
-        @media (min-width: 992px) {
-            max-width: 1400px;
-        }
-        @media (min-width: 1200px) {
-            padding: 0px 8px 200px 8px;
-        }
-        .image-section {
-            img {
-                border-radius: 15px;
-            }
-            .first-row {
-                
-                grid-template-columns: repeat(12, 1fr);
-                justify-content: center;
-                gap: 30px;
-                margin: 0 auto;
-                padding-bottom: 30px;
-                @media (min-width: 516px) {
-                    display: grid;
-                    padding-bottom: 0px;
-                }
-                .first-image {
-                    position: relative;
-                    grid-column: 1 / 8;
-                    height: 250px;
-                    margin-bottom: 30px;
-                    @media (min-width: 516px) {
-                        height: 300px;
-                        margin-bottom: 0px;
-                    }
-                    @media (min-width: 768px) {
-                        height: 480px;
-                    }
-                }
-                .second-image {
-                    position: relative;
-                    grid-column: 8 / 13;
-                    height: 250px;
-                    margin-bottom: 30px;
-                    @media (min-width: 516px) {
-                        height: 400px;
-                        margin-bottom: 0px;
-                    }
-                    @media (min-width: 768px) {
-                        height: 580px;
-                    }
-                    @media (min-width: 992px) {
-                        height: 780px;
-                    }
-                }
-            }
-            .second-row {
-                grid-template-columns: repeat(12, 1fr);
-                justify-content: center;
-                margin-top: 0px;
-                margin-left: 0px;
-                @media (min-width: 516px) {
-                    display: grid;
-                }
-               
-                .first-image {
-                    position: relative;
-                    grid-column: 2 / 7;
-                    height: 250px;
-                    margin-top: -30px;
-                    @media (min-width: 516px) {
-                        margin-top: -50px;
-                        height: 200px;
-                    }
-                    @media (min-width: 768px) {
-                        grid-column: 3 / 7;
-                    }
-                    @media (min-width: 992px) {
-                        height: 304px;
-                        margin-top: -200px;
-                    }
-                }
             }
         }
     }
@@ -321,18 +214,16 @@ export default function Page({ pageData }) {
             </Hero>
 
             <BootBrands>
-                <div className="page-link-wrapper">
-                    {pageData.acf.boot_brands_one.boot_brand.map((item, index) => {
-                        
-                        return (
-                            <div className="page-link" key={index}>
-                                <div className="image">
-                                    <Image src={`${item.image.url}`} alt={`${item.image.alt}`} fill style={{ objectFit: 'cover' }} />
-                                </div>
-                                <h2>{item.title}</h2>
-                            </div>
-                        )
-                    })}
+                <div className="wrapper">
+                    <ul>
+                        {pageData.acf.boot_brand_logo.map((item, index) => {
+                            return (
+                                <li key={index}>
+                                    <Image src={`${item.logo.url}`} alt={`${item.logo.alt}`} width={208} height={205} />
+                                </li>
+                            )
+                        })}
+                    </ul>
                 </div>
             </BootBrands>
 
@@ -340,21 +231,6 @@ export default function Page({ pageData }) {
                 <p>{pageData.acf.page_text}</p>
             </AfterHero>
 
-            <BootBrands>
-                <div className="page-link-wrapper">
-                    {pageData.acf.boot_brands_two.boot_brand.map((item, index) => {
-                        
-                        return (
-                            <div className="page-link" key={index}>
-                                <div className="image">
-                                    <Image src={`${item.image.url}`} alt={`${item.image.alt}`} fill style={{ objectFit: 'cover' }} />
-                                </div>
-                                <h2>{item.title}</h2>
-                            </div>
-                        )
-                    })}
-                </div>
-            </BootBrands>
 
             <BootStyles>
                 <div className="wrapper">
@@ -370,27 +246,6 @@ export default function Page({ pageData }) {
                     </ul>
                 </div>
             </BootStyles>
-
-            <FirstImageSection>
-                <div className="wrapper">
-                    <Image src={`https://inside2.andersonsgeneral.com/wp-content/uploads/2023/08/background-gallery-image.png`} alt={`background-image`} fill style={{ objectFit: 'contain' }} />
-                    <div className="image-section">
-                        <div className="first-row">
-                            <div className="first-image">
-                                <Image src={`${pageData.acf.first_image_section.image_1.url}`} alt={`${pageData.acf.first_image_section.image_1.alt}`} fill style={{ objectFit: 'cover' }} />
-                            </div>
-                            <div className="second-image">
-                                <Image src={`${pageData.acf.first_image_section.image_2.url}`} alt={`${pageData.acf.first_image_section.image_2.alt}`} fill style={{ objectFit: 'cover' }} />
-                            </div>
-                        </div>
-                        <div className="second-row">
-                            <div className="first-image">
-                                <Image src={`${pageData.acf.first_image_section.image_3.url}`} alt={`${pageData.acf.first_image_section.image_3.alt}`} fill style={{ objectFit: 'cover' }} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </FirstImageSection>
 
             <FormBox>
                 <div className="cognito">

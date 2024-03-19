@@ -11,6 +11,7 @@ import Contact from "../../../templates/Contact.js";
 import CorporateBoot from "../../../templates/CorporateBoot.js";
 import Apply from "../../../templates/Apply.js";
 import Policy from "../../../templates/Policy.js";
+import FootwearParent from "../../../templates/FootwearParent.js";
 
 async function getAllPages() {
   const res = await fetch(apiUrl + `/pages/all`)
@@ -101,6 +102,10 @@ export default async function Page({ params: { slug } }) {
   } else if (page.template == "templates/policy.php") {
     return (
       <Policy pageData={page} />
+    );
+  } else if (page.template == "templates/footwear-parent.php") {
+    return (
+      <FootwearParent pageData={page} />
     );
   } else {
     return (null);
