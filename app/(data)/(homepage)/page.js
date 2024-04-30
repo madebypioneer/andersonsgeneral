@@ -1,4 +1,4 @@
-import { apiUrl } from '../../global-settings.js';
+import { apiUrl, revalidateInterval } from '../../global-settings.js';
 import Home from '../../templates/Home';
 
 async function getPage() {

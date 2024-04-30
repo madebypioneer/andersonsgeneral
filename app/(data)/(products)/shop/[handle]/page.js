@@ -1,4 +1,4 @@
-import { apiUrl } from '../../../../global-settings.js';
+import { apiUrl, revalidateInterval } from '../../../../global-settings.js';
 import { notFound } from 'next/navigation';
 import ProductSingle from "../../../../templates/ProductSingle";
 
