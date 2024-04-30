@@ -2,7 +2,7 @@ import { apiUrl } from '../../global-settings.js';
 import Home from '../../templates/Home';
 
 async function getPage() {
-  const res = await fetch(apiUrl + `/pages/all/home`)
+  const res = await fetch(apiUrl + `/pages/all/home`, {next: {revalidate: revalidateInterval}})
   if (!res.ok) {
     throw Error(res.statusText);
   } else {

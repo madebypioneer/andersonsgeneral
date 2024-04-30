@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
 
-  if (req.query.secret !== process.env.VERCEL_REVALIDATE_TOKEN) {
+  if (req.query.secret !== process.env.VERCEL_ISR) {
     return res.status(401).json({ message: 'Invalid token' });
   }
 

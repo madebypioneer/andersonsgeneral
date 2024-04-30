@@ -8,7 +8,7 @@ async function getAllProducts() {
       'Content-Type': 'application/json',
       'X-Shopify-Access-Token': process.env.SHOPIFY_REST_API_ACCESS_TOKEN,
     },
-    next: { revalidate: 60 }
+    next: { revalidate: revalidateInterval }
   });
   if (!res.ok) {
     throw Error(res.statusText);
@@ -23,7 +23,7 @@ async function getSingleProduct(handle) {
       'Content-Type': 'application/json',
       'X-Shopify-Access-Token': process.env.SHOPIFY_REST_API_ACCESS_TOKEN,
     },
-    next: { revalidate: 60 }
+    next: { revalidate: revalidateInterval }
     });
       if (!res.ok) {
         throw Error(res.statusText);

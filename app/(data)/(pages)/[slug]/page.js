@@ -14,7 +14,7 @@ import Policy from "../../../templates/Policy.js";
 import FootwearParent from "../../../templates/FootwearParent.js";
 
 async function getAllPages() {
-  const res = await fetch(apiUrl + `/pages/all`)
+  const res = await fetch(apiUrl + `/pages/all`, {next: {revalidate: revalidateInterval}})
   if (!res.ok) {
     throw Error(res.statusText);
   } else {
@@ -23,11 +23,11 @@ async function getAllPages() {
 }
 
 async function getSinglePage(slug) {
-  const res = await fetch(apiUrl + `/pages/all/${slug}`)
+  const res = await fetch(apiUrl + `/pages/all/${slug}`, {next: {revalidate: revalidateInterval}})
   if (!res.ok) {
     return notFound();
   } 
-  else if (slug == "home" || slug == "404-page" || res == "404") {
+  else if (slug == "home" || slug == "404-2" || res == "404") {
     return notFound();
   } else {
     return res.json();
@@ -40,7 +40,7 @@ async function getAllProducts() {
       'Content-Type': 'application/json',
       'X-Shopify-Access-Token': process.env.SHOPIFY_REST_API_ACCESS_TOKEN,
     },
-    next: { revalidate: 60 }
+    next: { revalidate: revalidateInterval }
   });
   if (!res.ok) {
     throw Error(res.statusText);
