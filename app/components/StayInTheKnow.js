@@ -101,7 +101,7 @@ export default function StayInTheKnow({ stayInTheKnow }) {
                             <h2></h2>
                             <div className="mc-field-group">
                             <div className="lg:flex">
-                                <input type="email" value="" name="EMAIL" className="email-input" id="mce-EMAIL" placeholder="Your Email" />
+                                <input type="email" defaultValue="" name="EMAIL" className="email-input" id="mce-EMAIL" placeholder="Your Email" />
                                 <input type="submit" value="Sign Up Now" name="subscribe" id="mc-embedded-subscribe" className="green-button" />
                             </div>
                             </div>
