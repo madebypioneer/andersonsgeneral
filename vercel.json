@@ -1,6 +1,8 @@
 {
     "trailingSlash": false,
     "redirects": [
-        { "source": "/shop/:slug", "destination": "/products/:slug" }
+        { "source": "/shop/:slug", "destination": "/products/:slug" },
+        { "source": "/shop/", "destination": "/products/" },
+        { "source": "/shop/collections/:slug", "destination": "/products/collections/:slug" }
     ]
 }
