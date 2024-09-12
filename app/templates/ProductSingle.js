@@ -586,7 +586,7 @@ export default function ProductSingle({ productData }) {
                                         })}
                                     </ul>
                                     <div className="variant-image-group">
-                                        {productData.images.length > 1 ? 
+                                        {productData.variants.length > 1 ? 
 
                                         productData.images.map((item1, index) => {
                                             if (item.id === item1.variant_ids[0]) {
