@@ -583,7 +583,7 @@ export default function CollectionSingle({ productData, allProducts, collectionD
                                                 return (
                                                     <SplideSlide key={index} className="slide-single-img splide__slide">
                                                         <div id={item2.id} className="slide-image-id"></div>
-                                                        <a href={`${'/shop/' + item.handle}`}>
+                                                        <a href={`${'/products/' + item.handle}`}>
                                                         <Image src={item2.src} alt={item2.alt} fill style={{ objectFit: 'cover' }} quality={5} />
                                                         </a>
                                                         
@@ -603,7 +603,7 @@ export default function CollectionSingle({ productData, allProducts, collectionD
                                 <div className="product-text-content">
                                     <h2>{item.title}</h2>
                                     <h3>${item.variants[0].price}</h3>
-                                    <a href={`${'/shop/' + item.handle}`}>
+                                    <a href={`${'/products/' + item.handle}`}>
                                             <button className="brown-button">See More</button>
                                     </a>
                                 </div>
@@ -637,7 +637,7 @@ export default function CollectionSingle({ productData, allProducts, collectionD
                 <ul>
                     {collectionData.map((item, index) => {
                             return (
-                                <a href={`${'/shop/collections/' + item.title}`} key={index}>
+                                <a href={`${'/products/collections/' + item.title}`} key={index}>
                                     {item.title}
                                 </a>
                             )

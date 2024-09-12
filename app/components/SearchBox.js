@@ -107,7 +107,7 @@ function createSearchIndex(data) {
         <ul className="search-results">
           {searchResults.map((result, index) => (
             <li key={index}>
-              <a href={`${'/shop/' + encodeURIComponent(result.handle.slice(0, 50))}`}>{result.title}</a>
+              <a href={`${'/products/' + encodeURIComponent(result.handle.slice(0, 50))}`}>{result.title}</a>
             </li>
           ))}
         </ul>

@@ -1,0 +1,6 @@
+{
+    "trailingSlash": false,
+    "redirects": [
+        { "source": "", "destination": "" }
+    ]
+}

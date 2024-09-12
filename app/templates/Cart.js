@@ -425,7 +425,7 @@ export default function Cart({ pageData, products }) {
                         productIdElement.setAttribute('id', 'cart-item-id');
                         variantImgElement.setAttribute('class', 'variant-img');
                         variantImgElement.setAttribute('src', variantImgValue);
-                        productTitleElement.setAttribute('href', "/shop/" + productHandleValue);
+                        productTitleElement.setAttribute('href', "/products/" + productHandleValue);
                         productPriceElement.setAttribute('class', 'cart-item-price');
                         productTotalElement.setAttribute('class', 'cart-item-total');
                         productQuantityWrapper.setAttribute('class', 'quantity-box');
