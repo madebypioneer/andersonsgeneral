@@ -1,6 +1,6 @@
 {
     "trailingSlash": false,
     "redirects": [
-        { "source": "", "destination": "" }
+        { "source": "/shop/:slug", "destination": "/products/:slug" }
     ]
 }
