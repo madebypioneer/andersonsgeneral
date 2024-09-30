@@ -560,7 +560,11 @@ export default function ProductSingle({ productData }) {
         
 
         const secondaryImgs = document.querySelectorAll('#variant-secondary-img');
-        secondaryImgs[0].classList.add('variant-secondary-img-active');
+
+        if (secondaryImgs.length > 0) {
+            secondaryImgs[0].classList.add('variant-secondary-img-active');
+        }
+
 
     }, []);
     
