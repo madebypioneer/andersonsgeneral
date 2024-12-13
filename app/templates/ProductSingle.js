@@ -131,20 +131,33 @@ function addToCart(cartButton) {
             const colorToCompare = item.querySelector('.variant-color-option').innerText;
             const sizeToCompare = item.querySelector('.variant-size-option').innerText;
             
-            const variantId = item.id.toString();
-            const variantIdToStore = item.id + ':' + quantity;
-            cartJson = cartJson.filter(item => !item.startsWith(variantId));
-            cartJson.push(variantIdToStore);
-            window.localStorage.setItem("cartItemList", JSON.stringify(cartJson));
+            if (colorToCompare === colorToSearch && sizeToCompare === sizeToSearch) {
+                const variantId = item.id.toString();
+                const variantIdToStore = item.id + ':' + quantity;
+                cartJson = cartJson.filter(item => !item.startsWith(variantId));
+                cartJson.push(variantIdToStore);
+                window.localStorage.setItem("cartItemList", JSON.stringify(cartJson));
 
-            addToCartNotice.forEach((item) => {
-                item.classList.add('cart-interaction-show');
-                setTimeout(function() {
-                    item.classList.remove('cart-interaction-show');
-                }, 2000);
-            });
+                addToCartNotice.forEach((item) => {
+                    item.classList.add('cart-interaction-show');
+                    setTimeout(function() {
+                        item.classList.remove('cart-interaction-show');
+                    }, 2000);
+                });
 
-            toggleCartHasItems();
+                toggleCartHasItems();
+                
+                // console.log(searchForAlreadyAdded);
+                // if () {
+                //     console.log(`Found`);
+                //     cartJson = searchForAlreadyAdded;
+                // } else {
+                //     console.log('Not found');
+                //     cartJson.push(variantIdToStore);
+                // }
+            } else {
+                console.log('Not found');
+            }
         });
     }
 }
