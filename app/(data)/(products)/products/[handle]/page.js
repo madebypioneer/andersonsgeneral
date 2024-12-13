@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import ProductSingle from "../../../../templates/ProductSingle";
 
 async function getAllProducts() {
-  const res = await fetch(`https://andersons-general-store-statesboro.myshopify.com/products.json`, {
+  const res = await fetch(`https://andersons-general-store-statesboro.myshopify.com/products.json?limit=250`, {
     headers: {
       'Content-Type': 'application/json',
       'X-Shopify-Access-Token': process.env.SHOPIFY_REST_API_ACCESS_TOKEN,
