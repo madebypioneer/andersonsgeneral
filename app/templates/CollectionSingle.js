@@ -561,7 +561,7 @@ export default function CollectionSingle({ productData, allProducts, collectionD
                     productTagsToAdd.forEach((item1, index) => {
                         productTags.push(item1)
                     })
-                    if (item.status == 'active') {
+                    if (item.status == 'active' && item.title != 'Test Item (JMA)') {
                         return (
                             <div className="product" key={index}>
                                 {item.images.length > 0 ?
