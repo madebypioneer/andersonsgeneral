@@ -413,7 +413,7 @@ export default function Cart({ pageData, products }) {
                         let productHandleValue = item.parentElement.parentElement.querySelector('#product-handle').innerText;
                         let productPriceValue = item.parentElement.querySelector('#price').innerText;
                         let variantTitleValue = item.parentElement.querySelector('#variant-title').innerText;
-                        let variantImgValue = item.parentElement.querySelector('#variant-image').innerText;
+                        let variantImgValue = item?.parentElement?.querySelector('#variant-image')?.innerText || '';
                         productIdElement.textContent = productIdValue;
                         productTitleElement.textContent = productTitleValue;
                         productPriceElement.textContent = '$' + formatCurrency(productPriceValue);
