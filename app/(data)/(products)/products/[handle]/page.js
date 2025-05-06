@@ -53,3 +53,22 @@ export async function generateStaticParams() {
     handle: productSing.handle
   }));
 }
+
+export async function generateMetadata({ params: { handle } }) {
+  const _productSing = getSingleProduct(handle);
+  const productSing = await _productSing;
+  return {
+    title: productSing.product.title,
+    description: productSing.product.body_html,
+    openGraph: {
+      title: productSing.product.title,
+      description: productSing.product.body_html,
+      locale: 'en_US',
+      type: 'website',
+    },
+    twitter: {
+      title: productSing.product.title,
+      description: productSing.product.body_html,
+    }
+  }
+}

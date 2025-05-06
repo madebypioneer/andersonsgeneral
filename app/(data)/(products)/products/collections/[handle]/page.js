@@ -91,3 +91,22 @@ export async function generateStaticParams() {
     handle: collectionSing.handle
   }));
 }
+
+export async function generateMetadata({ params: { handle } }) {
+  const _productInCat = getAllProductsInCat(handle);
+  const productInCat = await _productInCat;
+  return {
+    title: productInCat.products[0].product_type,
+    description: "Shop " + productInCat.products[0].product_type + " from Anderson's General Store",
+    openGraph: {
+      title: productInCat.products[0].product_type,
+      description: "Shop " + productInCat.products[0].product_type + " from Anderson's General Store",
+      locale: 'en_US',
+      type: 'website',
+    },
+    twitter: {
+      title: productInCat.products[0].product_type,
+      description: "Shop " + productInCat.products[0].product_type + " from Anderson's General Store",
+    }
+  }
+}
