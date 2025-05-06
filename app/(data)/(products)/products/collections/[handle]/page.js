@@ -95,18 +95,22 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params: { handle } }) {
   const _productInCat = getAllProductsInCat(handle);
   const productInCat = await _productInCat;
+
+  const productType = productInCat.products?.[0]?.product_type || "Products";
+  const description = `Shop ${productType} from Anderson's General Store`;
+
   return {
-    title: productInCat.products[0].product_type,
-    description: "Shop " + productInCat.products[0].product_type + " from Anderson's General Store",
+    title: productType,
+    description: description,
     openGraph: {
-      title: productInCat.products[0].product_type,
-      description: "Shop " + productInCat.products[0].product_type + " from Anderson's General Store",
+      title: productType,
+      description: description,
       locale: 'en_US',
       type: 'website',
     },
     twitter: {
-      title: productInCat.products[0].product_type,
-      description: "Shop " + productInCat.products[0].product_type + " from Anderson's General Store",
+      title: productType,
+      description: description,
     }
   }
 }
