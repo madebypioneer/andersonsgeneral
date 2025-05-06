@@ -123,7 +123,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params: { slug } }) {
   const _page = getSinglePage(slug);
   const page = await _page;
-  if (page.response !== '404') {
+  if (page.response !== '404' && slug !== 'cart') {
     return {
       title: page.acf.seo.meta_title,
       description: page.acf.seo.meta_description,
