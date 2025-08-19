@@ -130,7 +130,7 @@ export default function Page({ pageData }) {
                         return (
                             <div className="page-link" key={index}>
                                 <div className="image">
-                                    <Image src={`${item.background_image.url}`} alt={`${item.background_image.alt}`} fill style={{ objectFit: 'cover' }} />
+                                    <img src={`${item.background_image.url}`} alt={`${item.background_image.alt}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 </div>
                                 <h2>{item.title}</h2>
                                 <a href={item.link}>
