@@ -206,7 +206,8 @@ export default function Page({ pageData }) {
         <>
 
             <Hero>
-                <Image src={`${pageData.acf.hero_section.background_image.url}`} alt={`${pageData.acf.hero_section.background_image.alt}`} fill style={{ objectFit: 'cover' }} />
+                <img className="fill-img" src={`${pageData.acf.hero_section.background_image.sizes['1536x1536']}`}
+                     alt={`${pageData.acf.hero_section.background_image.alt}`}/>
                 <div className="gradient"></div>
                 <div className="content">
                     <h1>{pageData.acf.hero_section.title}</h1>
@@ -219,7 +220,7 @@ export default function Page({ pageData }) {
                         {pageData.acf.boot_brand_logo.map((item, index) => {
                             return (
                                 <li key={index}>
-                                    <Image src={`${item.logo.url}`} alt={`${item.logo.alt}`} width={208} height={205} />
+                                    <img width={208} height={205} src={`${item.logo.sizes['1536x1536']}`} alt={`${item.logo.alt}`}/>
                                 </li>
                             )
                         })}
@@ -254,12 +255,13 @@ export default function Page({ pageData }) {
             </FormBox>
 
             <LargeImage>
-                <Image src={`${pageData.acf.large_image.url}`} alt={`${pageData.acf.large_image.alt}`} fill style={{ objectFit: 'cover' }} />
+                <img className="fill-img" src={`${pageData.acf.large_image.sizes['1536x1536']}`}
+                     alt={`${pageData.acf.large_image.alt}`}/>
             </LargeImage>
 
-            <KeepBrowsing keepBrowsing={keepBrowsing} />
+            <KeepBrowsing keepBrowsing={keepBrowsing}/>
 
-            <ProductBoxes productBoxes={productBoxes} />
+            <ProductBoxes productBoxes={productBoxes}/>
 
             <StayInTheKnow stayInTheKnow={stayInTheKnow} />
 

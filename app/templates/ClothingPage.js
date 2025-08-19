@@ -136,7 +136,7 @@ export default function ClothingPage({ pageData }) {
                         return (
                             <div className="page-link" key={index}>
                                 <div className="image">
-                                    <Image src={`${item.image.url}`} alt={`${item.image.alt}`} fill style={{ objectFit: 'cover' }} />
+                                    <img className="fill-img" src={`${item.image.sizes['1536x1536']}`} alt={`${item.image.alt}`}/>
                                 </div>
                                 <h2>{item.title}</h2>
                                 <a href={buttonLink}>
@@ -150,7 +150,7 @@ export default function ClothingPage({ pageData }) {
 
             <GearSection>
                 <div className="content">
-                    <Image src={`${pageData.acf.andersons_gear_section.badge.url}`} alt={`${pageData.acf.andersons_gear_section.badge.alt}`} width={304} height={306} />
+                    <img width={304} height={306} src={`${pageData.acf.andersons_gear_section.badge.sizes['1536x1536']}`} alt={`${pageData.acf.andersons_gear_section.badge.alt}`}/>
                     <h2>{pageData.acf.andersons_gear_section.title}</h2>
                     <p>{pageData.acf.andersons_gear_section.paragraph}</p>
                     <a href={gearButtonLink}>
@@ -158,13 +158,14 @@ export default function ClothingPage({ pageData }) {
                     </a>
                 </div>
                 <div className="image">
-                    <Image src={`${pageData.acf.andersons_gear_section.image.url}`} alt={`${pageData.acf.andersons_gear_section.image.alt}`} fill style={{ objectFit: 'cover' }} />
+                    <img className="fill-img" src={`${pageData.acf.andersons_gear_section.image.sizes['1536x1536']}`}
+                         alt={`${pageData.acf.andersons_gear_section.image.alt}`}/>
                 </div>
             </GearSection>
 
-            <KeepBrowsing keepBrowsing={keepBrowsing} />
+            <KeepBrowsing keepBrowsing={keepBrowsing}/>
 
-            <ProductBoxes productBoxes={productBoxes} />
+            <ProductBoxes productBoxes={productBoxes}/>
 
             <StayInTheKnow stayInTheKnow={stayInTheKnow} />
 

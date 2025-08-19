@@ -210,7 +210,7 @@ export default function About({ pageData }) {
                     {pageData.acf.events_section.event.map((item, index) => {
                         return (
                             <a href={item.link} className="event-link" key={index}>
-                                <Image src={`${item.background_image.url}`} alt={`${item.background_image.alt}`} fill style={{ objectFit: 'cover' }} />
+                                <img className="fill-img" src={`${item.background_image.sizes['1536x1536']}`} alt={`${item.background_image.alt}`}/>
                                 <div className="gradiant"></div>
                                 <h4>{item.title}</h4>
                             </a>
@@ -225,8 +225,8 @@ export default function About({ pageData }) {
                     <p>{pageData.acf.our_history_section.paragraph}</p>
                 </div>
                 <div className="image">
-                    <Image src={`${pageData.acf.our_history_section.badge.url}`} alt={`${pageData.acf.our_history_section.badge.alt}`} width={304} height={306} />
-                    <Image src={`${pageData.acf.our_history_section.image.url}`} alt={`${pageData.acf.our_history_section.image.alt}`} fill style={{ objectFit: 'contain' }} />
+                    <img width={304} height={306} src={`${pageData.acf.our_history_section.badge.sizes['1536x1536']}`} alt={`${pageData.acf.our_history_section.badge.alt}`}/>
+                    <img className="contain-img" src={`${pageData.acf.our_history_section.image.sizes['1536x1536']}`} alt={`${pageData.acf.our_history_section.image.alt}`}/>
                 </div>
             </OurHistory>
 
@@ -236,7 +236,7 @@ export default function About({ pageData }) {
                     {pageData.acf.team_section.team_member.map((item, index) => {
                         return (
                             <div className="team-member" key={index}>
-                                <Image src={`${item.headshot.url}`} alt={`${item.headshot.alt}`} width={300} height={250} />
+                                <img width={300} height={250} src={`${item.headshot.sizes['1536x1536']}`} alt={`${item.headshot.alt}`}/>
                                 <h4>{item.name}</h4>
                                 <h5>{item.job_title}</h5>
                             </div>

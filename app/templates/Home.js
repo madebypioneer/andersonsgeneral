@@ -242,7 +242,7 @@ export default function Home({ pageData }) {
     return (
         <>
             <Hero>
-                <Image src={`${pageData.acf.hero_section.background_image.url}`} alt={`${pageData.acf.hero_section.background_image.alt}`} fill style={{ objectFit: 'cover' }} />
+                <img class="fill-img" src={`${pageData.acf.hero_section.background_image.sizes['1536x1536']}`} alt={`${pageData.acf.hero_section.background_image.alt}`} />
                 <div className="gradient"></div>
                 <div className="content">
                     <h1>{pageData.acf.hero_section.title}</h1>
@@ -270,12 +270,12 @@ export default function Home({ pageData }) {
 
             <OurHistory>
                 <div className="content">
-                    <Image src={`${pageData.acf.our_history_section.badge.url}`} alt={`${pageData.acf.our_history_section.badge.alt}`} width={304} height={306} />
+                    <img width={304} height={306} src={`${pageData.acf.our_history_section.badge.sizes['1536x1536']}`} alt={`${pageData.acf.our_history_section.badge.alt}`}/>
                     <h2>{pageData.acf.our_history_section.title}</h2>
                     <p>{pageData.acf.our_history_section.paragraph}</p>
                 </div>
                 <div className="image">
-                    <Image src={`${pageData.acf.our_history_section.image.url}`} alt={`${pageData.acf.our_history_section.image.alt}`} fill style={{ objectFit: 'contain' }} />
+                    <img className="contain-img" src={`${pageData.acf.our_history_section.image.sizes['1536x1536']}`} alt={`${pageData.acf.our_history_section.image.alt}`}/>
                 </div>
             </OurHistory>
 

@@ -75,7 +75,9 @@ export default function ClothingPage({ pageData }) {
                         return (
                             <div className="page-link" key={index}>
                                 <div className="image">
-                                    <Image src={`${item.image.url}`} alt={`${item.image.alt}`} fill style={{ objectFit: 'cover' }} />
+                                    <img className="fill-img"
+                                         src={`${item.image.sizes['1536x1536']}`}
+                                         alt={`${item.image.alt}`}/>
                                 </div>
                                 <h2>{item.title}</h2>
                                 <a href={buttonLink}>

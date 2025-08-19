@@ -312,15 +312,16 @@ export default function ShopCategoryPage({ pageData }) {
     return (
         <>
             <Hero>
-                <Image src={`${pageData.acf.hero_section.background_image.url}`} alt={`${pageData.acf.hero_section.background_image.alt}`} fill style={{ objectFit: 'cover' }} />
+                <img className="fill-img" src={`${pageData.acf.hero_section.background_image.sizes['1536x1536']}`}
+                     alt={`${pageData.acf.hero_section.background_image.alt}`}/>
                 <div className="gradient"></div>
                 <div className="content">
                     <h1>{pageData.acf.hero_section.title}</h1>
                     {pageData.acf.hero_section.button.text ?
-                    <a href={heroButtonLink}>
-                        <div className="brown-button">{pageData.acf.hero_section.button.text}</div>
-                    </a>
-                    : ''}
+                        <a href={heroButtonLink}>
+                            <div className="brown-button">{pageData.acf.hero_section.button.text}</div>
+                        </a>
+                        : ''}
                 </div>
             </Hero>
 
@@ -329,40 +330,47 @@ export default function ShopCategoryPage({ pageData }) {
             </AfterHero>
 
             <FirstImageSection>
-                <div className="wrapper">
-                    <Image src={`https://inside2.andersonsgeneral.com/wp-content/uploads/2023/08/background-gallery-image.png`} alt={`background-image`} fill style={{ objectFit: 'contain' }} />
+            <div className="wrapper">
+                    <img className="contain-img" src={`https://inside2.andersonsgeneral.com/wp-content/uploads/2023/08/background-gallery-image.png`} alt={`background-image`}/>
                     <div className="image-section">
                         <div className="first-row">
                             <div className="first-image">
-                                <Image src={`${pageData.acf.first_image_section.image_1.url}`} alt={`${pageData.acf.first_image_section.image_1.alt}`} fill style={{ objectFit: 'cover' }} />
+                                <img className="fill-img"
+                                     src={`${pageData.acf.first_image_section.image_1.sizes['1536x1536']}`}
+                                     alt={`${pageData.acf.first_image_section.image_1.alt}`}/>
                             </div>
                             <div className="second-image">
-                                <Image src={`${pageData.acf.first_image_section.image_2.url}`} alt={`${pageData.acf.first_image_section.image_2.alt}`} fill style={{ objectFit: 'cover' }} />
+                                <img className="fill-img"
+                                     src={`${pageData.acf.first_image_section.image_2.sizes['1536x1536']}`}
+                                     alt={`${pageData.acf.first_image_section.image_2.alt}`}/>
                             </div>
                         </div>
                         <div className="second-row">
                             <div className="first-image">
-                                <Image src={`${pageData.acf.first_image_section.image_3.url}`} alt={`${pageData.acf.first_image_section.image_3.alt}`} fill style={{ objectFit: 'cover' }} />
+                                <img className="fill-img"
+                                     src={`${pageData.acf.first_image_section.image_3.sizes['1536x1536']}`}
+                                     alt={`${pageData.acf.first_image_section.image_3.alt}`}/>
                             </div>
                         </div>
                     </div>
-                </div>
+            </div>
             </FirstImageSection>
 
             <LargeImage>
-                <Image src={`${pageData.acf.large_image.url}`} alt={`${pageData.acf.large_image.alt}`} fill style={{ objectFit: 'cover' }} />
+            <img className="fill-img" src={`${pageData.acf.large_image.sizes['1536x1536']}`}
+                     alt={`${pageData.acf.large_image.alt}`}/>
             </LargeImage>
 
             {pageData.acf.brands_section.brand_logo.length > 0 ?
-   
-            <BrandsSection>
-                <h2>{pageData.acf.brands_section.title}</h2>
+
+                <BrandsSection>
+                    <h2>{pageData.acf.brands_section.title}</h2>
                 <p>{pageData.acf.brands_section.paragraph}</p>
                 <div className="brand-logos">
                     {pageData.acf.brands_section.brand_logo.map((item, index) => {
                         return (
                             <div className="logo" key={index}>
-                                <Image src={`${item.logo.url}`} alt={`${item.logo.alt}`} width={128} height={128} />
+                                <img width={128} height={128} src={`${item.logo.sizes['1536x1536']}`} alt={`${item.logo.alt}`}/>
                             </div>
                         )
                     })}
@@ -377,22 +385,30 @@ export default function ShopCategoryPage({ pageData }) {
 
             <SecondImageSection>
                 <div className="wrapper">
-                    <Image src={`https://inside2.andersonsgeneral.com/wp-content/uploads/2023/08/background-gallery-image.png`} alt={`background-image`} fill style={{ objectFit: 'contain' }} />
+                    <img className="contain-img" src={`https://inside2.andersonsgeneral.com/wp-content/uploads/2023/08/background-gallery-image.png`} alt={`background-image`}/>
                     <div className="image-section">
                         <div className="first-row">
                             <div className="first-image">
-                                <Image src={`${pageData.acf.second_image_section.image_1.url}`} alt={`${pageData.acf.second_image_section.image_1.alt}`} fill style={{ objectFit: 'cover' }} />
+                                <img className="fill-img"
+                                     src={`${pageData.acf.second_image_section.image_1.sizes['1536x1536']}`}
+                                     alt={`${pageData.acf.second_image_section.image_1.alt}`}/>
                             </div>
                             <div className="second-image">
-                                <Image src={`${pageData.acf.second_image_section.image_2.url}`} alt={`${pageData.acf.second_image_section.image_2.alt}`} fill style={{ objectFit: 'cover' }} />
+                                <img className="fill-img"
+                                     src={`${pageData.acf.second_image_section.image_2.sizes['1536x1536']}`}
+                                     alt={`${pageData.acf.second_image_section.image_2.alt}`}/>
                             </div>
                         </div>
                         <div className="second-row">
                             <div className="first-image">
-                                <Image src={`${pageData.acf.second_image_section.image_3.url}`} alt={`${pageData.acf.second_image_section.image_3.alt}`} fill style={{ objectFit: 'cover' }} />
+                                <img className="fill-img"
+                                     src={`${pageData.acf.second_image_section.image_3.sizes['1536x1536']}`}
+                                     alt={`${pageData.acf.second_image_section.image_3.alt}`}/>
                             </div>
                             <div className="second-image">
-                                <Image src={`${pageData.acf.second_image_section.image_4.url}`} alt={`${pageData.acf.second_image_section.image_4.alt}`} fill style={{ objectFit: 'cover' }} />
+                                <img className="fill-img"
+                                     src={`${pageData.acf.second_image_section.image_4.sizes['1536x1536']}`}
+                                     alt={`${pageData.acf.second_image_section.image_4.alt}`}/>
                             </div>
                         </div>
                     </div>
