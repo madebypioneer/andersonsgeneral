@@ -562,8 +562,7 @@ export default function Cart({ pageData, products }) {
                                                 {variant.price}
                                             </div>
                                             <div id="variant-image">
-                                                {variant.featured_image ? variant.featured_image.src : ''}
-                                                {product.images ? product.images[0].src : ''}
+                                                {variant?.featured_image?.src || product?.images?.[0]?.src || ''}
                                             </div>
                                         </div>
                                     </>
