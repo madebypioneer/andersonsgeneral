@@ -16,7 +16,7 @@ function getButtonLink(linkToWhere, onSiteLink, offSiteLink, fileLink) {
 export default async function NotFound() {
 
     async function getPage() {
-        const res = await fetch(apiUrl + `/pages/all/404-page`)
+        const res = await fetch(apiUrl + `/pages/all/404-2`)
         if (!res.ok) {
             throw Error(res.statusText);
         } else {
