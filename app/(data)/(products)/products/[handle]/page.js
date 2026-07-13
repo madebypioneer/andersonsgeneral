@@ -12,7 +12,7 @@ const SHOPIFY_STOREFRONT_ENDPOINT =
     `https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
 
 const ALLOWED_COLLECTION_HANDLES = [
-  'hats',
+  'hats-headwear',
   'misc',
   'tops',
 ];
