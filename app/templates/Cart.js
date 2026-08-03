@@ -30,10 +30,17 @@ function parseStoredCart() {
                         1,
                         Number.parseInt(quantity, 10) || 1
                     ),
+                    title: '',
+                    handle: '',
+                    variantTitle: '',
+                    price: '0.00',
+                    currencyCode: 'USD',
+                    image: '',
+                    imageAlt: '',
                 };
             }
 
-            return {
+            const normalizedItem = {
                 id: String(
                     item?.id || item?.variantId || ''
                 ).trim(),
@@ -44,6 +51,21 @@ function parseStoredCart() {
                         10
                     ) || 1
                 ),
+            };
+
+            return {
+                ...normalizedItem,
+                title: String(item?.title || ''),
+                handle: String(item?.handle || ''),
+                variantTitle: String(
+                    item?.variantTitle || ''
+                ),
+                price: String(item?.price || '0.00'),
+                currencyCode: String(
+                    item?.currencyCode || 'USD'
+                ),
+                image: String(item?.image || ''),
+                imageAlt: String(item?.imageAlt || ''),
             };
         })
         .filter((item) => /^\d+$/.test(item.id));
@@ -59,9 +81,17 @@ function parseStoredCart() {
 }
 
 function storeCart(items) {
-    const storedItems = items.map(
-        (item) => `${item.id}:${item.quantity}`
-    );
+    const storedItems = items.map((item) => ({
+        id: item.id,
+        quantity: item.quantity,
+        title: item.title || '',
+        handle: item.handle || '',
+        variantTitle: item.variantTitle || '',
+        price: item.price || '0.00',
+        currencyCode: item.currencyCode || 'USD',
+        image: item.image || '',
+        imageAlt: item.imageAlt || '',
+    }));
 
     window.localStorage.setItem(
         'cartItemList',
@@ -70,12 +100,11 @@ function storeCart(items) {
 }
 
 function formatCurrency(amount) {
-  // Ensure the input is treated as a number
-  const numericAmount = parseFloat(amount);
-  // Round to two decimal places using toFixed() method
-  const roundedAmount = numericAmount.toFixed(2);
-  // Return the formatted amount as a string
-  return roundedAmount;
+  const numericAmount = Number.parseFloat(amount);
+
+  return Number.isFinite(numericAmount)
+      ? numericAmount.toFixed(2)
+      : '0.00';
 }
 
 function updateHeaderCartState(hasItems) {
@@ -350,61 +379,33 @@ const Checkout = styled.div`
     }
 `;
 
-export default function Cart({ pageData }) {
+export default function Cart({
+                                 pageData,
+                                 productCatalog = [],
+                             }) {
     const [cartItems, setCartItems] = useState(null);
     const [loadError, setLoadError] = useState(false);
 
     useEffect(() => {
-        let cancelled = false;
+        const storedItems = parseStoredCart();
+        const catalogById = new Map(
+            productCatalog.map((item) => [
+                String(item.id),
+                item,
+            ])
+        );
 
-        async function loadCart() {
-            const lines = parseStoredCart();
+        const resolvedItems = storedItems.map((item) => ({
+            ...item,
+            ...(catalogById.get(item.id) || {}),
+            id: item.id,
+            quantity: item.quantity,
+        }));
 
-            if (lines.length === 0) {
-                setCartItems([]);
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/cart-items', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ lines }),
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(
-                        result?.error ||
-                        'The cart items could not be loaded.'
-                    );
-                }
-
-                if (!cancelled) {
-                    const resolvedItems = result.items || [];
-
-                    setCartItems(resolvedItems);
-                    storeCart(resolvedItems);
-                }
-            } catch (error) {
-                console.error('Unable to load the cart.', error);
-
-                if (!cancelled) {
-                    setLoadError(true);
-                    setCartItems([]);
-                }
-            }
-        }
-
-        loadCart();
-
-        return () => {
-            cancelled = true;
-        };
-    }, []);
+        setCartItems(resolvedItems);
+        setLoadError(false);
+        storeCart(resolvedItems);
+    }, [productCatalog]);
 
     const hasItems = Boolean(cartItems?.length);
 
@@ -566,17 +567,28 @@ export default function Cart({ pageData }) {
                 {(cartItems || []).map((item) => (
                     <div className="cart-item" key={item.id}>
                         <div id="cart-item-id">{item.id}</div>
-                        <Image
-                            className="variant-img"
-                            src={item.image}
-                            alt={item.imageAlt || item.title}
-                            width={120}
-                            height={120}
-                        />
+                        {item.image ? (
+                            <Image
+                                className="variant-img"
+                                src={item.image}
+                                alt={item.imageAlt || item.title}
+                                width={120}
+                                height={120}
+                            />
+                        ) : (
+                            <div
+                                className="variant-img variant-img-placeholder"
+                                aria-hidden="true"
+                            />
+                        )}
                         <div className="cart-item-content">
-                            <a href={`/products/${item.handle}`}>
-                                {item.title}
-                            </a>
+                            {item.handle ? (
+                                <a href={`/products/${item.handle}`}>
+                                    {item.title || 'Product'}
+                                </a>
+                            ) : (
+                                <span>{item.title || 'Product'}</span>
+                            )}
                             <h4>{item.variantTitle}</h4>
                             <button
                                 type="button"

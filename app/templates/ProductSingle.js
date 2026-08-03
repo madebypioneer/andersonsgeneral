@@ -561,7 +561,25 @@ export default function ProductSingle({ productData }) {
                 getStoredVariantId(cartItem) !== variantId
         );
 
-        cartItems.push(variantId + ':' + quantity);
+        const cartImage =
+            getVariantImages(
+                productData,
+                selectedVariant
+            )[0] || productData?.image;
+
+        cartItems.push({
+            id: variantId,
+            quantity,
+            title: productData.title || '',
+            handle: productData.handle || '',
+            variantTitle: selectedVariant.title || '',
+            price: selectedVariant.price || '0.00',
+            currencyCode:
+                selectedVariant.currency_code || 'USD',
+            image: cartImage?.src || '',
+            imageAlt:
+                cartImage?.alt || productData.title || '',
+        });
 
         window.localStorage.setItem(
             'cartItemList',

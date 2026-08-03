@@ -1,4 +1,8 @@
-import { apiUrl, revalidateInterval } from '../../../global-settings.js';
+import {
+  apiUrl,
+  builtCollectionHandles,
+  revalidateInterval,
+} from '../../../global-settings.js';
 import { notFound } from 'next/navigation';
 import ThankYou from "../../../templates/ThankYou.js";
 import Cart from "../../../templates/Cart.js";
@@ -12,6 +16,205 @@ import CorporateBoot from "../../../templates/CorporateBoot.js";
 import Apply from "../../../templates/Apply.js";
 import Policy from "../../../templates/Policy.js";
 import FootwearParent from "../../../templates/FootwearParent.js";
+
+const SHOPIFY_STORE_DOMAIN =
+    'andersons-general-store-statesboro.myshopify.com';
+
+const SHOPIFY_API_VERSION = '2026-07';
+
+const SHOPIFY_STOREFRONT_ENDPOINT =
+    `https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
+
+const CART_COLLECTION_PRODUCTS_QUERY = `
+  query CartCollectionProducts(
+    $handle: String!
+    $after: String
+  ) {
+    collection(handle: $handle) {
+      products(first: 250, after: $after) {
+        nodes {
+          title
+          handle
+
+          featuredImage {
+            url
+            altText
+          }
+
+          images(first: 250) {
+            nodes {
+              url
+              altText
+            }
+          }
+
+          variants(first: 250) {
+            nodes {
+              id
+              title
+              availableForSale
+
+              selectedOptions {
+                name
+                value
+              }
+
+              price {
+                amount
+                currencyCode
+              }
+
+              image {
+                url
+                altText
+              }
+            }
+          }
+        }
+
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  }
+`;
+
+function normalizeText(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function getCartVariantImage(product, variant) {
+  if (variant.image?.url) {
+    return variant.image;
+  }
+
+  const variantLabels = new Set(
+      [
+        variant.title,
+        ...(variant.selectedOptions || []).map(
+            (option) => option.value
+        ),
+      ].map(normalizeText)
+  );
+
+  return (
+    (product.images?.nodes || []).find(
+        (image) =>
+          image?.url &&
+          variantLabels.has(
+              normalizeText(image.altText)
+          )
+    ) ||
+    product.featuredImage ||
+    null
+  );
+}
+
+async function getCollectionCartItems(collectionHandle) {
+  const token =
+      process.env.SHOPIFY_STOREFRONT_PRIVATE_TOKEN;
+
+  if (!token) {
+    throw new Error(
+        'Missing SHOPIFY_STOREFRONT_PRIVATE_TOKEN environment variable.'
+    );
+  }
+
+  const cartItems = [];
+  let after = null;
+  let hasNextPage = true;
+
+  while (hasNextPage) {
+    const response = await fetch(
+        SHOPIFY_STOREFRONT_ENDPOINT,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'Shopify-Storefront-Private-Token': token,
+          },
+          body: JSON.stringify({
+            query: CART_COLLECTION_PRODUCTS_QUERY,
+            variables: {
+              handle: collectionHandle,
+              after,
+            },
+          }),
+          next: {
+            revalidate: revalidateInterval,
+          },
+        }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || result.errors?.length) {
+      throw new Error(
+          `Unable to build the cart catalog for ${collectionHandle}: ` +
+          JSON.stringify(result.errors || response.statusText)
+      );
+    }
+
+    const connection =
+        result.data?.collection?.products;
+
+    if (!connection) {
+      throw new Error(
+          `Shopify collection was not found: ${collectionHandle}`
+      );
+    }
+
+    (connection.nodes || []).forEach((product) => {
+      (product.variants?.nodes || []).forEach((variant) => {
+        const image = getCartVariantImage(
+            product,
+            variant
+        );
+
+        cartItems.push({
+          id: variant.id.split('/').pop(),
+          title: product.title || '',
+          handle: product.handle || '',
+          variantTitle: variant.title || '',
+          price: variant.price?.amount || '0.00',
+          currencyCode:
+              variant.price?.currencyCode || 'USD',
+          image: image?.url || '',
+          imageAlt:
+              image?.altText || product.title || '',
+          availableForSale:
+              Boolean(variant.availableForSale),
+        });
+      });
+    });
+
+    hasNextPage = Boolean(
+        connection.pageInfo?.hasNextPage
+    );
+    after = connection.pageInfo?.endCursor || null;
+  }
+
+  return cartItems;
+}
+
+async function getCartProductCatalog() {
+  const collectionItems = await Promise.all(
+      builtCollectionHandles.map(
+          getCollectionCartItems
+      )
+  );
+
+  return Array.from(
+      new Map(
+          collectionItems
+              .flat()
+              .map((item) => [item.id, item])
+      ).values()
+  );
+}
 
 async function getAllPages() {
   const res = await fetch(apiUrl + `/pages/all`, {next: {revalidate: revalidateInterval}})
@@ -46,8 +249,14 @@ export default async function Page({ params: { slug } }) {
       <ThankYou pageData={page} />
     );
   } else if (page.template == "templates/cart.php") {
+    const productCatalog =
+        await getCartProductCatalog();
+
     return (
-      <Cart pageData={page} />
+      <Cart
+        pageData={page}
+        productCatalog={productCatalog}
+      />
     );
   } else if (page.template == "templates/clothing.php") {
     return (
