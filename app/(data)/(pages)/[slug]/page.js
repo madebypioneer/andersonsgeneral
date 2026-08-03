@@ -34,28 +34,10 @@ async function getSinglePage(slug) {
   }
 }
 
-async function getAllProducts() {
-  const res = await fetch(`https://andersons-general-store-statesboro.myshopify.com/products.json?limit=250`, {
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Access-Token': process.env.SHOPIFY_REST_API_ACCESS_TOKEN,
-    },
-    next: { revalidate: revalidateInterval }
-  });
-  if (!res.ok) {
-    throw Error(res.statusText);
-  } else {
-    return res.json();
-  }
-}
-
 export default async function Page({ params: { slug } }) {
   
   const _page = getSinglePage(slug);
   const page = await _page;
-
-  const _products = getAllProducts();
-  const products = await _products;
 
   if (page.response === '404') return notFound();
 
@@ -65,7 +47,7 @@ export default async function Page({ params: { slug } }) {
     );
   } else if (page.template == "templates/cart.php") {
     return (
-      <Cart pageData={page} products={products} />
+      <Cart pageData={page} />
     );
   } else if (page.template == "templates/clothing.php") {
     return (

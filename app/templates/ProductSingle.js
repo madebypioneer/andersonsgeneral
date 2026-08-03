@@ -1,224 +1,99 @@
 'use client';
 
-import { motion } from "framer-motion";
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
-import { Splide, SplideTrack, SplideSlide, Slides } from '@splidejs/react-splide';
+import {
+    Splide,
+    SplideTrack,
+    SplideSlide,
+} from '@splidejs/react-splide';
 
-function getButtonLink(linkToWhere, onSiteLink, offSiteLink, fileLink) {
-    switch (linkToWhere) {
-      case "Onsite":
-        return (onSiteLink);
-      case "Offsite":
-        return (offSiteLink);
-      case "File":
-        return (fileLink);
-      default:
-        return ('/');
+function getStoredCartItems() {
+    try {
+        const storedCart = JSON.parse(
+            window.localStorage.getItem('cartItemList')
+        );
+
+        return Array.isArray(storedCart) ? storedCart : [];
+    } catch {
+        return [];
     }
 }
 
-// function getVariantWithColor(changedElement) {
-//     const colorToSearch = changedElement.target.parentElement.querySelector('.color-to-search').innerText;
-//     const sizeToSearch = changedElement.target.value;
-//     const variantTriggers = document.querySelectorAll('.variant-trigger');
-//     variantTriggers.forEach((item) => {
-//         const colorToCompare = item.querySelector('.variant-color-option').innerText;
-//         const sizeToCompare = item.querySelector('.variant-size-option').innerText;
-//         if (colorToCompare === colorToSearch && sizeToCompare === sizeToSearch) {
-//             console.log(item.id);
-//         }
-//     });
-// }
-
-function resetQuantity(changedElement) {
-    let quantity = changedElement.target.parentElement.parentElement.parentElement.parentElement.querySelector('#quantity');
-    quantity.value = 1;
-}
-
-function resetSizes(changedElement) {
-    let globalSizeOptions = document.querySelectorAll('.size-option');
-    let globalSizeOptionLists = document.querySelectorAll('.size-list');
-    globalSizeOptions.forEach((item) => {
-        item.classList.remove('size-option-active');
-    });
-    globalSizeOptionLists.forEach((item, index) => {
-        item.firstElementChild.classList.add('size-option-active');
-    });
-}
-
-const resetQuantityAndSizes = (changedElement) => {
-    resetQuantity(changedElement);
-    resetSizes(changedElement);
-};
-
-function selectSize(thisSize) {
-    let sizeOptions = document.querySelectorAll('.size-option');
-    var thisOption = thisSize.target;
-    sizeOptions.forEach((item) => {
-        item.classList.remove('size-option-active');
-    });
-    thisOption.classList.add('size-option-active');
-}
-
-function changeQuantity(numberElement) {
-    const colorToSearch = numberElement.target.parentElement.parentElement.parentElement.parentElement.querySelector('.variant-show').querySelector('.color-to-search').innerText;
-    const sizeToSearch = numberElement.target.parentElement.parentElement.parentElement.parentElement.querySelector('.size-option-active').innerText;
-    const variantTriggers = document.querySelectorAll('.variant-trigger');
-    variantTriggers.forEach((item) => {
-        const colorToCompare = item.querySelector('.variant-color-option').innerText;
-        const sizeToCompare = item.querySelector('.variant-size-option').innerText;
-        if (colorToCompare === colorToSearch && sizeToCompare === sizeToSearch) {
-            
-        }
-    });
-}
-
-function quantityPlus(clickedItem) {
-    let quantity = clickedItem.target.parentElement.querySelector('#quantity');
-    let quantityValue = parseInt(quantity.value);
-    quantityValue++;
-    quantity.value = quantityValue;
-    changeQuantity(clickedItem);
-}
-
-function quantityMinus(clickedItem) {
-    let quantity = clickedItem.target.parentElement.querySelector('#quantity');
-    let quantityValue = parseInt(quantity.value);
-    if (quantityValue === 1) {
-
-    } else {
-        quantityValue--;
-        quantity.value = quantityValue;
+function getStoredVariantId(item) {
+    if (typeof item === 'string') {
+        return item.split(':')[0];
     }
+
+    return String(item?.id || item?.variantId || '');
 }
 
-let cartJson = [];
-let cartItemsAccountedFor = false;
-
-function getOtherCartItems() {
-    // if (JSON.parse(window.localStorage.getItem("cartItemList"))) {
-    //     const localStorageCart = JSON.parse(window.localStorage.getItem("cartItemList"));
-    //     localStorageCart.forEach((item, index) => {
-    //         cartJson.push(item);
-    //     });
-    //     console.log(cartJson);
-    //     cartItemsAccountedFor = true;
-    // }
-
-}
-
-function addToCart(cartButton) {
-
-    const addToCartNotice = document.querySelectorAll('#add-to-cart-notice');
-
-    if (JSON.parse(window.localStorage.getItem("cartItemList")) && cartJson.length !== JSON.parse(window.localStorage.getItem("cartItemList")).length) {
-        let localStorageCart = JSON.parse(window.localStorage.getItem("cartItemList"));
-        localStorageCart.forEach((item, index) => {
-            cartJson.push(item);
-            cartItemsAccountedFor = true;
-        });
-    }
-    
-    let quantity = cartButton.target.parentElement.parentElement.querySelector('#quantity').value;
-    if (quantity >= 1) {
-        const colorToSearch = cartButton.target.parentElement.parentElement.parentElement.querySelector('.variant-show').querySelector('.color-to-search').innerText;
-        
-        const sizeToSearch = cartButton.target.parentElement.parentElement.parentElement.querySelector('.size-option-active').innerText;
-        const variantTriggers = document.querySelectorAll('.variant-trigger');
-        variantTriggers.forEach((item) => {
-            const colorToCompare = item.querySelector('.variant-color-option').innerText;
-            const sizeToCompare = item.querySelector('.variant-size-option').innerText;
-            
-            if (colorToCompare === colorToSearch && sizeToCompare === sizeToSearch) {
-                const variantId = item.id.toString();
-                const variantIdToStore = item.id + ':' + quantity;
-                cartJson = cartJson.filter(item => !item.startsWith(variantId));
-                cartJson.push(variantIdToStore);
-                window.localStorage.setItem("cartItemList", JSON.stringify(cartJson));
-
-                addToCartNotice.forEach((item) => {
-                    item.classList.add('cart-interaction-show');
-                    setTimeout(function() {
-                        item.classList.remove('cart-interaction-show');
-                    }, 2000);
-                });
-
-                toggleCartHasItems();
-                
-                // console.log(searchForAlreadyAdded);
-                // if () {
-                //     console.log(`Found`);
-                //     cartJson = searchForAlreadyAdded;
-                // } else {
-                //     console.log('Not found');
-                //     cartJson.push(variantIdToStore);
-                // }
-            } else {
-                console.log('Not found');
-            }
-        });
-    }
-}
-
-function secondaryImgSwapDesktop(img) {
-    const secondaryImgs = img.target.parentElement.parentElement.querySelectorAll('#variant-secondary-img');
-    secondaryImgs.forEach((item) => {
-        item.classList.remove('variant-secondary-img-active');
-    });
-    const primaryImgBox = img.target.parentElement.parentElement.querySelector('#variant-showcase-img');
-    primaryImgBox.src = img.target.src;
-    img.target.classList.add('variant-secondary-img-active');
-}
-
-function secondaryImgSwapMobile(img) {
-const secondaryImgs = img.target.parentElement.parentElement.querySelectorAll('#variant-secondary-img');
-secondaryImgs.forEach((item) => {
-    item.classList.remove('variant-secondary-img-active');
-});
-const primaryImgBox = img.target.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('#variant-showcase-img');
-primaryImgBox.src = img.target.src;
-img.target.classList.add('variant-secondary-img-active');
-}
-
- function toggleCartHasItems() {
+function toggleCartHasItems() {
     const cartHasItems = document.querySelector('.cart-has-items');
 
-    if (localStorage.getItem('cartItemList') === null || JSON.parse(localStorage.getItem("cartItemList")).length === 0) {
-        cartHasItems.classList.remove('cart-has-items-active');
-    } else {
-        cartHasItems.classList.add('cart-has-items-active');
+    if (!cartHasItems) {
+        return;
     }
+
+    cartHasItems.classList.toggle(
+        'cart-has-items-active',
+        getStoredCartItems().length > 0
+    );
 }
 
-function nextShowcaseImg() {
-    const currentShowcaseImg = document.querySelector('.variant-secondary-img-active');
-    if (currentShowcaseImg.nextElementSibling) {
-        currentShowcaseImg.nextElementSibling.classList.add('variant-secondary-img-active');
-        currentShowcaseImg.nextElementSibling.click();
-        currentShowcaseImg.classList.remove('variant-secondary-img-active');
-    }
-    else {
-        currentShowcaseImg.parentElement.childNodes[0].classList.add('variant-secondary-img-active');
-        currentShowcaseImg.parentElement.childNodes[0].click();
-        currentShowcaseImg.classList.remove('variant-secondary-img-active');
-    }
+function getVariantLabel(variant) {
+    return (
+        variant?.option2 ||
+        variant?.option1 ||
+        variant?.title ||
+        ''
+    );
 }
 
-function prevShowcaseImg() {
-    const currentShowcaseImg = document.querySelector('.variant-secondary-img-active');
-    if (currentShowcaseImg.previousElementSibling) {
-        currentShowcaseImg.previousElementSibling.classList.add('variant-secondary-img-active');
-        currentShowcaseImg.previousElementSibling.click();
-        currentShowcaseImg.classList.remove('variant-secondary-img-active');
+function getVariantImages(productData, variant) {
+    const productImages = productData?.images || [];
+    const variantId = String(variant?.id || '');
+    const variantLabels = new Set(
+        [
+            variant?.title,
+            variant?.option1,
+            variant?.option2,
+        ].filter(Boolean)
+    );
+
+    const matchingImages = productImages.filter((image) =>
+        image?.variant_ids?.map(String).includes(variantId) ||
+        variantLabels.has(image?.alt)
+    );
+
+    const imagesToUse = matchingImages.length
+        ? matchingImages
+        : productImages;
+
+    const uniqueImages = Array.from(
+        new Map(
+            imagesToUse
+                .filter((image) => image?.src)
+                .map((image) => [image.src, image])
+        ).values()
+    );
+
+    if (uniqueImages.length) {
+        return uniqueImages;
     }
-    else {
-        let lastShowcaseImgIndex = currentShowcaseImg.parentElement.childNodes.length - 1;
-        currentShowcaseImg.parentElement.childNodes[lastShowcaseImgIndex].classList.add('variant-secondary-img-active');
-        currentShowcaseImg.parentElement.childNodes[lastShowcaseImgIndex].click();
-        currentShowcaseImg.classList.remove('variant-secondary-img-active');
-    }
+
+    return productData?.image?.src
+        ? [productData.image]
+        : [];
+}
+
+function formatPrice(price) {
+    const numericPrice = Number.parseFloat(price);
+
+    return Number.isFinite(numericPrice)
+        ? numericPrice.toFixed(2)
+        : String(price || '');
 }
 
 const Content = styled.div`
@@ -346,6 +221,13 @@ const Content = styled.div`
                                 transition: .25s;
                             }
                         }
+                        .quantity-control {
+                            display: flex;
+                            align-items: center;
+                            padding: 0;
+                            background: transparent;
+                            border: 0;
+                        }
                     }
                 }
                 .variant-showcase-img-current {
@@ -354,7 +236,15 @@ const Content = styled.div`
                     object-fit: cover;
                 }
                 .image-secondary-group {
-                    
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                }
+                .thumbnail-button {
+                    display: block;
+                    padding: 0;
+                    background: transparent;
+                    border: 0;
                 }
                 .variant-image-group {
                     position: relative;
@@ -379,6 +269,21 @@ const Content = styled.div`
                         height: 700px;
                         max-height: 700px;
                     }
+                    .main-image-frame {
+                        position: absolute;
+                        top: 0;
+                        right: 15px;
+                        bottom: 0;
+                        left: 15px;
+                        @media (min-width: 768px) {
+                            right: 25px;
+                            left: 25px;
+                        }
+                        @media (min-width: 992px) {
+                            right: 50px;
+                            left: 50px;
+                        }
+                    }
                     .img-browse-arrows {
                         position: absolute;
                         bottom: 0;
@@ -391,9 +296,18 @@ const Content = styled.div`
                     .img-browse-arrow {
                         width: 32px;
                         height: 32px;
+                        padding: 0;
+                        background: transparent;
+                        border: 0;
+                        fill: #285c4d;
                         &:hover {
                             cursor: pointer;
                             fill: #204a3e;
+                        }
+                        svg {
+                            width: 100%;
+                            height: 100%;
+                            fill: inherit;
                         }
                     }
                 }
@@ -431,6 +345,15 @@ const Content = styled.div`
         height: 48px;
         border: 2px solid #091511;
         border-radius: 6px;
+    }
+    .variant-color-trigger {
+        padding: 0;
+        background: transparent;
+        border: 0;
+    }
+    .variant-color-trigger-active .showcase-img-wrapper {
+        border-color: #97783F;
+        box-shadow: 0 0 0 2px #97783F;
     }
     .variant-size-option {
         display: none;
@@ -517,217 +440,459 @@ const Content = styled.div`
     }
 `;
 
+const PRODUCT_GALLERY_OPTIONS = {
+    type: 'slide',
+    rewind: true,
+    perPage: 6,
+    perMove: 1,
+    gap: '8px',
+    pagination: false,
+    arrows: false,
+};
+
 export default function ProductSingle({ productData }) {
+    const variants = productData?.variants || [];
+    const hasSizeOptions = variants.some(
+        (variant) => Boolean(variant.option2)
+    );
 
-    let sizeOptions = [];
+    const colorOptions = Array.from(
+        new Map(
+            variants.map((variant) => [
+                getVariantLabel(variant),
+                variant,
+            ])
+        ).entries()
+    ).map(([label, variant]) => ({ label, variant }));
 
-    productData.variants.map((item, index) => {
+    const initialVariant = variants[0];
+    const [selectedColor, setSelectedColor] = useState(
+        getVariantLabel(initialVariant)
+    );
+    const [selectedSize, setSelectedSize] = useState(
+        hasSizeOptions ? initialVariant?.option1 || '' : ''
+    );
+    const [activeImageIndex, setActiveImageIndex] =
+        useState(0);
+    const [quantity, setQuantity] = useState(1);
+    const [cartNoticeVisible, setCartNoticeVisible] =
+        useState(false);
+    const cartNoticeTimer = useRef(null);
 
-        if (item.option1 && sizeOptions.includes(item.option1) === false) {
-            sizeOptions.push(item.option1);
+    const variantsForColor = variants.filter(
+        (variant) =>
+            getVariantLabel(variant) === selectedColor
+    );
+
+    const selectedVariant = (
+        hasSizeOptions
+            ? variantsForColor.find(
+                (variant) =>
+                    variant.option1 === selectedSize
+            )
+            : variantsForColor[0]
+    ) || initialVariant;
+
+    const sizeOptions = Array.from(
+        new Set(
+            variantsForColor
+                .map((variant) => variant.option1)
+                .filter(Boolean)
+        )
+    );
+
+    const galleryImages = getVariantImages(
+        productData,
+        selectedVariant
+    );
+    const activeImage =
+        galleryImages[activeImageIndex] || galleryImages[0];
+
+    useEffect(() => () => {
+        if (cartNoticeTimer.current) {
+            clearTimeout(cartNoticeTimer.current);
         }
-
-    });
-
-    useEffect(() => {
-       
-        const variantTriggers = document.querySelectorAll('.variant-trigger');
-        const variantSingles = document.querySelectorAll('.variant-single');
-        const variantSecondaryImgsAll = document.querySelectorAll('.variant-secondary-img');
-        variantTriggers.forEach((item, index) => {
-            item.addEventListener('click', (clickedItem) => {
-                variantTriggers.forEach((item1) => {
-                    if (item1.querySelector('.variant-showcase-img')) {
-                        item1.querySelector('.variant-showcase-img').classList.remove('variant-showcase-img-active');
-                    }
-                });
-                item.querySelector('.variant-showcase-img').classList.add('variant-showcase-img-active');
-                variantSingles.forEach((item2, index2) => {
-                    if (item.id === item2.id) {
-                        let variantSingleActiveImg = item2.querySelector('.image-secondary-group').childNodes[0];
-                        item2.classList.add('variant-show');
-                        variantSecondaryImgsAll.forEach((item3) => {
-                            item3.classList.remove('variant-secondary-img-active');
-                        });
-                        variantSingleActiveImg.classList.add('variant-secondary-img-active');
-                    } else {
-                        item2.classList.remove('variant-show');
-                    }
-                });
-            });
-        });
-
-        
-
-        const secondaryImgs = document.querySelectorAll('#variant-secondary-img');
-
-        if (secondaryImgs.length > 0) {
-            secondaryImgs[0].classList.add('variant-secondary-img-active');
-        }
-
-
     }, []);
-    
+
+    function selectColor(label) {
+        const firstVariantForColor = variants.find(
+            (variant) =>
+                getVariantLabel(variant) === label
+        );
+
+        setSelectedColor(label);
+        setSelectedSize(
+            hasSizeOptions
+                ? firstVariantForColor?.option1 || ''
+                : ''
+        );
+        setActiveImageIndex(0);
+        setQuantity(1);
+    }
+
+    function selectSize(size) {
+        setSelectedSize(size);
+        setActiveImageIndex(0);
+        setQuantity(1);
+    }
+
+    function showPreviousImage() {
+        setActiveImageIndex((currentIndex) =>
+            currentIndex === 0
+                ? galleryImages.length - 1
+                : currentIndex - 1
+        );
+    }
+
+    function showNextImage() {
+        setActiveImageIndex((currentIndex) =>
+            (currentIndex + 1) % galleryImages.length
+        );
+    }
+
+    function addToCart() {
+        if (!selectedVariant || quantity < 1) {
+            return;
+        }
+
+        const variantId = String(selectedVariant.id);
+        const cartItems = getStoredCartItems().filter(
+            (cartItem) =>
+                getStoredVariantId(cartItem) !== variantId
+        );
+
+        cartItems.push(variantId + ':' + quantity);
+
+        window.localStorage.setItem(
+            'cartItemList',
+            JSON.stringify(cartItems)
+        );
+
+        toggleCartHasItems();
+        setCartNoticeVisible(true);
+
+        if (cartNoticeTimer.current) {
+            clearTimeout(cartNoticeTimer.current);
+        }
+
+        cartNoticeTimer.current = setTimeout(() => {
+            setCartNoticeVisible(false);
+        }, 2000);
+    }
+
     return (
         <Content>
             <div className="wrapper">
                 <div className="product-data">
-                    
-                    {productData.variants.map((item, index) => {
-                        return (
-                            <div className={index === 0 ? 'variant-single variant-show' : 'variant-single'} id={item.id} key={index}>
-                                <h1 className="mobile-product-title">{productData.title}</h1>
-                                <div className="product-images">
-                                    <ul className="image-secondary-group desktop-secondary-images">
-                                        {productData.images.map((item1, index) => {
-                                            if (item.title === item1.alt || item.option2 === item1.alt) {
-                                                return (
-                                                    <>
-                                                        <img id="variant-secondary-img" className="variant-secondary-img" src={item1.src} width={80} height={80} onClick={secondaryImgSwapDesktop} />
-                                                    </>
-                                                );
-                                            }
-                                        })}
-                                    </ul>
-                                    <div className="variant-image-group">
-                                        {productData.variants.length > 1 ? 
+                    <div className="variant-single variant-show">
+                        <h1 className="mobile-product-title">
+                            {productData.title}
+                        </h1>
 
-                                        productData.images.map((item1, index) => {
-                                            if (item.id === item1.variant_ids[0]) {
-                                                return (
-                                                    <img id="variant-showcase-img" className="variant-showcase-img-current" src={item1.src} key={index} />
-                                                );
+                        <div className="product-images">
+                            <ul className="image-secondary-group desktop-secondary-images">
+                                {galleryImages.map((image, imageIndex) => (
+                                    <li key={image.src}>
+                                        <button
+                                            type="button"
+                                            className="thumbnail-button"
+                                            aria-label={
+                                                'Show image ' +
+                                                (imageIndex + 1) +
+                                                ' of ' +
+                                                galleryImages.length
                                             }
-                                        })
-                                        
-                                        : 
+                                            onClick={() =>
+                                                setActiveImageIndex(
+                                                    imageIndex
+                                                )
+                                            }
+                                        >
+                                            <Image
+                                                className={[
+                                                    'variant-secondary-img',
+                                                    imageIndex ===
+                                                    activeImageIndex
+                                                        ? 'variant-secondary-img-active'
+                                                        : '',
+                                                ].join(' ')}
+                                                src={image.src}
+                                                alt={image.alt || ''}
+                                                width={80}
+                                                height={80}
+                                            />
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
 
-                                        <img id="variant-showcase-img" className="variant-showcase-img-current" src={productData.image.src} key={index} />
-                                        
-                                        }
-                                        <div className="img-browse-arrows">
-                                            <svg id="img-browse-prev" className="img-browse-arrow" fill="#285c4d" onClick={prevShowcaseImg} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">{/* Font Awesome Pro 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. */}<path d="M512 256A256 256 0 1 0 0 256a256 256 0 1 0 512 0zM231 127c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-71 71L376 232c13.3 0 24 10.7 24 24s-10.7 24-24 24l-182.1 0 71 71c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L119 273c-9.4-9.4-9.4-24.6 0-33.9L231 127z"/></svg>
-                                            <svg id="img-browse-next" className="img-browse-arrow" fill="#285c4d" onClick={nextShowcaseImg} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">{/* Font Awesome Pro 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. */}<path d="M0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM281 385c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l71-71L136 280c-13.3 0-24-10.7-24-24s10.7-24 24-24l182.1 0-71-71c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0L393 239c9.4 9.4 9.4 24.6 0 33.9L281 385z"/></svg>
-                                        </div>
+                            <div className="variant-image-group">
+                                {activeImage && (
+                                    <div className="main-image-frame">
+                                        <Image
+                                            className="variant-showcase-img-current"
+                                            src={activeImage.src}
+                                            alt={
+                                                activeImage.alt ||
+                                                productData.title
+                                            }
+                                            fill
+                                            sizes="(max-width: 767px) 100vw, 50vw"
+                                            style={{ objectFit: 'cover' }}
+                                            priority
+                                        />
                                     </div>
-                                    <Splide hasTrack={ false }
-                                    options={ 
-                                        {
-                                            type: 'slide',
-                                            perPage: 6,
-                                            pagination: false,
-                                            arrows: false
-                                        } 
-                                    }
-                                        id=""
-                                        className="image-secondary-group mobile-secondary-images"
-                                    >
-                                        <SplideTrack>
-                                            {productData.images.map((item1, index) => {
-                                                if (item.title === item1.alt || item.option2 === item1.alt) {
-                                                    return (
-                                                        <SplideSlide key={index} className="slide-single-img splide__slide">
-                                                            <img id="variant-secondary-img" className="variant-secondary-img" src={item1.src} width={80} height={80} onClick={secondaryImgSwapMobile} />
-                                                        </SplideSlide>
-                                                    );
-                                                }
-                                            })}
-                                        </SplideTrack>
-                                    </Splide>
-                                </div>
-                                <div className="product-content-box">
-                                    <h1 className="desktop-product-title">{productData.title}</h1>
-                                    <div id="variant-id" className="variant-id">{item.id}</div>
-                                    
-                                    <h2 className="price">${item.price}</h2>
-                                    {item.option2 ? <h6 className="color-to-search">{item.option2}</h6> : <h6 className="color-to-search">{item.title}</h6>}
-                                    <div className="variant-trigger-wrapper">
-                                        {productData.variants.map((item, index) => {
-                                            return (
-                                                <div className="variant-trigger" id={item.id} key={index}>
-                                                    {item.option1 && !item.option2 ? <div className="variant-color-option">{item.option1}</div> : ''}
-                                                    {item.option1 && item.option2 ? <div className="variant-size-option">{item.option1}</div> : <div className="variant-size-option"></div>}
-                                                    {item.option2 ? <div className="variant-color-option">{item.option2}</div> : ''}
-                                                    {productData.images.map((item1, index1) => {
-                                                        if (item.id === item1.variant_ids[0]) {
-                                                            return (
-                                                                <div className="showcase-img-wrapper" key={index1}>
-                                                                    <Image id="variant-showcase-img" className={index1 === 0 ? 'variant-showcase-img-active variant-showcase-img' : 'variant-showcase-img'} src={item1.src} fill style={{ objectFit: 'cover' }} key={index1} onClick={resetQuantityAndSizes} quality={25} />
-                                                                </div>
-                                                            );
+                                )}
+
+                                {galleryImages.length > 1 && (
+                                    <div className="img-browse-arrows">
+                                        <button
+                                            type="button"
+                                            className="img-browse-arrow"
+                                            aria-label="Previous product image"
+                                            onClick={showPreviousImage}
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 512 512"
+                                            >
+                                                <path d="M512 256A256 256 0 1 0 0 256a256 256 0 1 0 512 0zM231 127c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-71 71L376 232c13.3 0 24 10.7 24 24s-10.7 24-24 24l-182.1 0 71 71c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-71-71L376 280c13.3 0 24-10.7 24-24s-10.7-24-24-24l-182.1 0 71-71c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0L119 239c-9.4 9.4-9.4 24.6 0 33.9L231 385z" />
+                                            </svg>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="img-browse-arrow"
+                                            aria-label="Next product image"
+                                            onClick={showNextImage}
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 512 512"
+                                            >
+                                                <path d="M0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM281 385c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l71-71L136 280c-13.3 0-24-10.7-24-24s10.7-24 24-24l182.1 0-71-71c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0L393 239c9.4 9.4 9.4 24.6 0 33.9L281 385z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {galleryImages.length > 0 && (
+                                <Splide
+                                    key={selectedColor}
+                                    hasTrack={false}
+                                    options={PRODUCT_GALLERY_OPTIONS}
+                                    aria-label="Product image thumbnails"
+                                    className="image-secondary-group mobile-secondary-images"
+                                >
+                                    <SplideTrack>
+                                        {galleryImages.map(
+                                            (image, imageIndex) => (
+                                                <SplideSlide
+                                                    key={image.src}
+                                                    className="slide-single-img"
+                                                >
+                                                    <button
+                                                        type="button"
+                                                        className="thumbnail-button"
+                                                        aria-label={
+                                                            'Show image ' +
+                                                            (imageIndex + 1) +
+                                                            ' of ' +
+                                                            galleryImages.length
                                                         }
-                                                    })}
-                                                </div>
+                                                        onClick={() =>
+                                                            setActiveImageIndex(
+                                                                imageIndex
+                                                            )
+                                                        }
+                                                    >
+                                                        <Image
+                                                            className={[
+                                                                'variant-secondary-img',
+                                                                imageIndex ===
+                                                                activeImageIndex
+                                                                    ? 'variant-secondary-img-active'
+                                                                    : '',
+                                                            ].join(' ')}
+                                                            src={image.src}
+                                                            alt={image.alt || ''}
+                                                            width={80}
+                                                            height={80}
+                                                        />
+                                                    </button>
+                                                </SplideSlide>
+                                            )
+                                        )}
+                                    </SplideTrack>
+                                </Splide>
+                            )}
+                        </div>
+
+                        <div className="product-content-box">
+                            <h1 className="desktop-product-title">
+                                {productData.title}
+                            </h1>
+                            <div className="variant-id">
+                                {selectedVariant?.id}
+                            </div>
+                            <h2 className="price">
+                                {'$' + formatPrice(
+                                    selectedVariant?.price
+                                )}
+                            </h2>
+                            <h6 className="color-to-search">
+                                {selectedColor}
+                            </h6>
+
+                            {colorOptions.length > 1 && (
+                                <div className="variant-trigger-wrapper">
+                                    {colorOptions.map(
+                                        ({ label, variant }) => {
+                                            const colorImage =
+                                                getVariantImages(
+                                                    productData,
+                                                    variant
+                                                )[0];
+
+                                            return (
+                                                <button
+                                                    type="button"
+                                                    key={label}
+                                                    className={[
+                                                        'variant-color-trigger',
+                                                        label === selectedColor
+                                                            ? 'variant-color-trigger-active'
+                                                            : '',
+                                                    ].join(' ')}
+                                                    aria-label={
+                                                        'Select ' + label
+                                                    }
+                                                    aria-pressed={
+                                                        label === selectedColor
+                                                    }
+                                                    onClick={() =>
+                                                        selectColor(label)
+                                                    }
+                                                >
+                                                    <span className="showcase-img-wrapper">
+                                                        {colorImage && (
+                                                            <Image
+                                                                className="variant-showcase-img"
+                                                                src={colorImage.src}
+                                                                alt=""
+                                                                fill
+                                                                sizes="48px"
+                                                                style={{
+                                                                    objectFit:
+                                                                        'cover',
+                                                                }}
+                                                                quality={25}
+                                                            />
+                                                        )}
+                                                    </span>
+                                                </button>
                                             );
-                                        })}
-                                    </div>
-                                    {item.option2 ? 
-                                    <>
-                                    <h6 className="">Select a Size</h6>
-                                    <ul id="size-options" className="size-list">
-                                        {sizeOptions.map((item, index) => {
-                                            return (
-                                            (index == 0) ? 
-                                              
-                                            <li key={index} className="size-option size-option-active" onClick={selectSize}>{item}</li>
-                                                
-                                            : 
-
-                                            <li key={index} className="size-option" onClick={selectSize}>{item}</li>
-                                            
-                                            )
-                                        })}
-                                    </ul>
-                                    {/* <select className="size-to-search" onChange={resetQuantity}>
-                                        {sizeOptions.map((item, index) => {
-                                            return (
-                                                <option value={item} key={index}>{item}</option>
-                                            )
-                                        })}
-                                    </select> */}
-                                    </>
-                                    : 
-
-                                    <div className="size-option-active"></div>
-                                    
-                                    }
-                                    <div className="quantity-box">
-                                        <h6>Quantity</h6>
-                                        <img id="quantity-minus" src="https://inside2.andersonsgeneral.com/wp-content/uploads/2023/08/minus.svg" onClick={quantityMinus} />
-                                        <input type="number" id="quantity" min="1" value="1" disabled />
-                                        <img id="quantity-plus" src="https://inside2.andersonsgeneral.com/wp-content/uploads/2023/08/plus.svg" onClick={quantityPlus} />
-                                    </div>
-                                    <button id="add-to-cart" onClick={addToCart} className="green-button add-to-cart-button">Add to cart</button>
-                                    <div id="add-to-cart-notice" className="cart-interaction">added to cart</div>
+                                        }
+                                    )}
                                 </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            
-                {/* <div className="variant-trigger-wrapper">
-                    {productData.variants.map((item, index) => {
-                        return (
-                            <div className="variant-trigger" id={item.id} key={index}>
-                                {item.option1 && !item.option2 ? <div className="variant-color-option">{item.option1}</div> : ''}
-                                {item.option1 && item.option2 ? <div className="variant-size-option">{item.option1}</div> : <div className="variant-size-option"></div>}
-                                {item.option2 ? <div className="variant-color-option">{item.option2}</div> : ''}
-                                {productData.images.map((item1, index1) => {
-                                    if (item.id === item1.variant_ids[0]) {
-                                        return (
-                                            <div className="showcase-img-wrapper" key={index1}>
-                                                <Image id="variant-showcase-img" className={index1 === 0 ? 'variant-showcase-img-active variant-showcase-img' : 'variant-showcase-img'} src={item1.src} fill style={{ objectFit: 'cover' }} key={index1} onClick={resetQuantity} />
-                                            </div>
-                                        );
+                            )}
+
+                            {hasSizeOptions && (
+                                <>
+                                    <h6>Select a Size</h6>
+                                    <div className="size-list">
+                                        {sizeOptions.map((size) => (
+                                            <button
+                                                type="button"
+                                                key={size}
+                                                className={[
+                                                    'size-option',
+                                                    size === selectedSize
+                                                        ? 'size-option-active'
+                                                        : '',
+                                                ].join(' ')}
+                                                aria-pressed={
+                                                    size === selectedSize
+                                                }
+                                                onClick={() =>
+                                                    selectSize(size)
+                                                }
+                                            >
+                                                {size}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+
+                            <div className="quantity-box">
+                                <h6>Quantity</h6>
+                                <button
+                                    type="button"
+                                    className="quantity-control"
+                                    aria-label="Decrease quantity"
+                                    onClick={() =>
+                                        setQuantity((current) =>
+                                            Math.max(1, current - 1)
+                                        )
                                     }
-                                })}
+                                >
+                                    <Image
+                                        src="https://inside2.andersonsgeneral.com/wp-content/uploads/2023/08/minus.svg"
+                                        alt=""
+                                        width={32}
+                                        height={32}
+                                    />
+                                </button>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    value={quantity}
+                                    aria-label="Quantity"
+                                    disabled
+                                />
+                                <button
+                                    type="button"
+                                    className="quantity-control"
+                                    aria-label="Increase quantity"
+                                    onClick={() =>
+                                        setQuantity(
+                                            (current) => current + 1
+                                        )
+                                    }
+                                >
+                                    <Image
+                                        src="https://inside2.andersonsgeneral.com/wp-content/uploads/2023/08/plus.svg"
+                                        alt=""
+                                        width={32}
+                                        height={32}
+                                    />
+                                </button>
                             </div>
-                        );
-                    })}
-                </div> */}
-                
+
+                            <button
+                                type="button"
+                                onClick={addToCart}
+                                className="green-button add-to-cart-button"
+                            >
+                                Add to cart
+                            </button>
+                            <div
+                                className={[
+                                    'cart-interaction',
+                                    cartNoticeVisible
+                                        ? 'cart-interaction-show'
+                                        : '',
+                                ].join(' ')}
+                                role="status"
+                                aria-live="polite"
+                            >
+                                added to cart
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </Content>
     );
 }
-

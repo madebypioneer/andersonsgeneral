@@ -1,94 +1,73 @@
 'use client';
 
-import { motion } from "framer-motion";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import styled from 'styled-components';
 
-function getButtonLink(linkToWhere, onSiteLink, offSiteLink, fileLink) {
-    switch (linkToWhere) {
-      case "Onsite":
-        return (onSiteLink);
-      case "Offsite":
-        return (offSiteLink);
-      case "File":
-        return (fileLink);
-      default:
-        return ('/');
+function parseStoredCart() {
+    let storedCart;
+
+    try {
+        storedCart = JSON.parse(
+            window.localStorage.getItem('cartItemList')
+        );
+    } catch {
+        return [];
     }
+
+    if (!Array.isArray(storedCart)) {
+        return [];
+    }
+
+    const normalizedItems = storedCart
+        .map((item) => {
+            if (typeof item === 'string') {
+                const [id, quantity] = item.split(':');
+
+                return {
+                    id: String(id || '').trim(),
+                    quantity: Math.max(
+                        1,
+                        Number.parseInt(quantity, 10) || 1
+                    ),
+                };
+            }
+
+            return {
+                id: String(
+                    item?.id || item?.variantId || ''
+                ).trim(),
+                quantity: Math.max(
+                    1,
+                    Number.parseInt(
+                        item?.quantity,
+                        10
+                    ) || 1
+                ),
+            };
+        })
+        .filter((item) => /^\d+$/.test(item.id));
+
+    return Array.from(
+        new Map(
+            normalizedItems.map((item) => [
+                item.id,
+                item,
+            ])
+        ).values()
+    );
 }
 
-const cartForCheckoutPrepared = [];
+function storeCart(items) {
+    const storedItems = items.map(
+        (item) => `${item.id}:${item.quantity}`
+    );
 
-const handleCheckout = async () => {
-
-    let localStorageCartRaw = window.localStorage.getItem("cartItemList");
-
-    let localStorageCart = JSON.parse(window.localStorage.getItem("cartItemList"));
-
-    let cartItems = document.querySelectorAll('.cart-item');
-    
-    cartItems.forEach((item, index) => {
-        const variantId = item.querySelector('#cart-item-id').innerText.toString();
-        let quantity = item.querySelector('#quantity').value;
-        const variantIdToStore = variantId + ':' + quantity;
-        localStorageCart = localStorageCart.filter(item => !item.startsWith(variantId));
-        localStorageCart.push(variantIdToStore);
-        console.log(localStorageCart);
-    });
-
-    for (let i = 0; i < localStorageCart.length; i++) {
-        // Add the joined elements to the new array
-        cartForCheckoutPrepared.push(localStorageCart[i]);
-    }
-    // localStorage.removeItem("cartItemList");
-    window.location.href = `https://andersons-general-store-statesboro.myshopify.com/cart/` + cartForCheckoutPrepared;
-
-    localStorage.removeItem('cartItemList');
-
-};
-
-const removeCartItem = async (cartItemElement, removalId) => {
-    console.log(removalId);
-    const variantId = removalId.toString();
-    let localStorageCart = JSON.parse(window.localStorage.getItem("cartItemList"));
-    localStorageCart = localStorageCart.filter(item => !item.startsWith(variantId));
-    window.localStorage.setItem("cartItemList", JSON.stringify(localStorageCart));
-    console.log(cartItemElement);
-    cartItemElement.remove();
-    calculateCartTotals();
-    toggleCartHasItems();
-};
-
-const reCalculateItemTotals = async () => {
-
-    const cartItemQuantities = document.querySelectorAll('#quantity');
-    cartItemQuantities.forEach((item, index) => {
-        let itemPriceToUpdate = item.parentElement.parentElement.querySelector('.cart-item-price').innerText;
-        let itemTotalToUpdate = item.parentElement.parentElement.querySelector('.cart-item-total');
-        itemPriceToUpdate.replace('$', '');
-        let newTotalPrice = formatCurrency(itemPriceToUpdate.replace('$', '') * item.value);
-        itemTotalToUpdate.innerText = '$' + newTotalPrice;
-    });
-
-};
-
-const calculateCartTotals = async () => {
-
-    const cartSubtotalElement = document.querySelector('.cart-subtotal');
-    const cartItemTotalTexts = document.querySelectorAll('.cart-item-total');
-    const cartItemTotalArray = [...cartItemTotalTexts];
-
-    console.log(cartItemTotalTexts);
-
-    let cartItemSubtotal = cartItemTotalArray.reduce((subtotal, item) => {
-        let cartItemTotal = parseFloat(item.innerText.replace('$', ''));
-        subtotal += cartItemTotal;
-        return subtotal;
-      }, 0);
-      
-      cartSubtotalElement.innerText = 'Estimated Subtotal: $' + formatCurrency(cartItemSubtotal);
-
-};
+    window.localStorage.setItem(
+        'cartItemList',
+        JSON.stringify(storedItems)
+    );
+}
 
 function formatCurrency(amount) {
   // Ensure the input is treated as a number
@@ -99,27 +78,14 @@ function formatCurrency(amount) {
   return roundedAmount;
 }
 
-function toggleCartHasItems() {
+function updateHeaderCartState(hasItems) {
     const cartHasItems = document.querySelector('.cart-has-items');
-    const cartEmpty = document.querySelector('.cart-empty');
-    const explainBar = document.querySelector('.explain-bar');
-    const checkoutWrapper = document.querySelector('.checkout-wrapper');
-    const topCheckoutButton = document.querySelector('#top-checkout-button');
 
-    console.log(localStorage.getItem('cartItemList') !== null)
-
-    if (localStorage.getItem('cartItemList') === null || JSON.parse(localStorage.getItem("cartItemList")).length === 0) {
-        cartHasItems.classList.remove('cart-has-items-active');
-        cartEmpty.classList.remove('hidden');
-        explainBar.classList.add('hidden');
-        checkoutWrapper.classList.add('hidden');
-        topCheckoutButton.classList.add('hidden');
-    } else {
-        cartHasItems.classList.add('cart-has-items-active');
-        cartEmpty.classList.add('hidden');
-        explainBar.classList.remove('hidden');
-        checkoutWrapper.classList.remove('hidden');
-        topCheckoutButton.classList.remove('hidden');
+    if (cartHasItems) {
+        cartHasItems.classList.toggle(
+            'cart-has-items-active',
+            hasItems
+        );
     }
 }
 
@@ -325,6 +291,13 @@ const CartStyle = styled.div`
                     transition: .25s;
                 }
             }
+            .quantity-control {
+                display: flex;
+                align-items: center;
+                padding: 0;
+                background: transparent;
+                border: 0;
+            }
         }
         .cart-item-price {
             display: none;
@@ -377,203 +350,312 @@ const Checkout = styled.div`
     }
 `;
 
-const Table = styled.div`
-    display: none;
-`;
-
-export default function Cart({ pageData, products }) {
+export default function Cart({ pageData }) {
+    const [cartItems, setCartItems] = useState(null);
+    const [loadError, setLoadError] = useState(false);
 
     useEffect(() => {
-       
-        if (JSON.parse(window.localStorage.getItem("cartItemList"))) {
-            const cartElement = document.querySelector('#cart');
-            const variantIds = document.querySelectorAll('.variant-id');
-            let localStorageCart = JSON.parse(window.localStorage.getItem("cartItemList"));
-            localStorageCart.forEach((item, index) => {
-                let localStorageCartSplit = item.split(':');
-                let localStorageCartId = localStorageCartSplit[0];
-                let localStorageCartQuantity = localStorageCartSplit[1];
-                variantIds.forEach((item, index) => {
-                    if (item.innerText === localStorageCartId) {
-                        const cartItemElement = document.createElement('div');
-                        const cartItemContentElement = document.createElement('div');
-                        const productIdElement = document.createElement('div');
-                        const productTitleElement = document.createElement('a');
-                        const productPriceElement = document.createElement('h3');
-                        const variantTitleElement = document.createElement('h4');
-                        const variantImgElement = document.createElement('img');
-                        const productQuantityWrapper = document.createElement('div');
-                        const productQuantityElement = document.createElement('input');
-                        const productQuantityPlus = document.createElement('img');
-                        const productQuantityMinus = document.createElement('img');
-                        const removalButton = document.createElement('button');
-                        const productTotalElement = document.createElement('h3');
-                        let productIdValue = item.innerText;
-                        let productTitleValue = item.parentElement.parentElement.querySelector('#product-title').innerText;
-                        let productHandleValue = item.parentElement.parentElement.querySelector('#product-handle').innerText;
-                        let productPriceValue = item.parentElement.querySelector('#price').innerText;
-                        let variantTitleValue = item.parentElement.querySelector('#variant-title').innerText;
-                        let variantImgValue = item?.parentElement?.querySelector('#variant-image')?.innerText || '';
-                        productIdElement.textContent = productIdValue;
-                        productTitleElement.textContent = productTitleValue;
-                        productPriceElement.textContent = '$' + formatCurrency(productPriceValue);
-                        variantTitleElement.textContent = variantTitleValue;
-                        removalButton.textContent = "Remove";
-                        productTotalElement.textContent = '$' + formatCurrency(productPriceValue * localStorageCartQuantity);
-                        cartItemElement.setAttribute('class', 'cart-item');
-                        cartItemContentElement.setAttribute('class', 'cart-item-content');
-                        productIdElement.setAttribute('id', 'cart-item-id');
-                        variantImgElement.setAttribute('class', 'variant-img');
-                        variantImgElement.setAttribute('src', variantImgValue);
-                        productTitleElement.setAttribute('href', "/products/" + productHandleValue);
-                        productPriceElement.setAttribute('class', 'cart-item-price');
-                        productTotalElement.setAttribute('class', 'cart-item-total');
-                        productQuantityWrapper.setAttribute('class', 'quantity-box');
-                        productQuantityElement.setAttribute('type', 'number');
-                        productQuantityElement.setAttribute('id', 'quantity');
-                        productQuantityElement.setAttribute('min', '1');
-                        productQuantityElement.setAttribute('value', localStorageCartQuantity);
-                        productQuantityElement.setAttribute('disabled', '');
-                        productQuantityPlus.setAttribute('id', 'quantity-plus');
-                        productQuantityMinus.setAttribute('id', 'quantity-minus');
-                        productQuantityPlus.setAttribute('src', 'https://inside2.andersonsgeneral.com/wp-content/uploads/2023/08/plus.svg');
-                        productQuantityMinus.setAttribute('src', 'https://inside2.andersonsgeneral.com/wp-content/uploads/2023/08/minus.svg');
-                        removalButton.setAttribute('id', 'removal-button');
-                        cartElement.appendChild(cartItemElement);
-                        cartItemElement.appendChild(productIdElement);
-                        cartItemElement.appendChild(variantImgElement);
-                        cartItemElement.appendChild(cartItemContentElement);
-                        cartItemContentElement.appendChild(productTitleElement);
-                        cartItemContentElement.appendChild(variantTitleElement);
-                        cartItemElement.appendChild(productQuantityWrapper);
-                        cartItemContentElement.appendChild(removalButton);
-                        productQuantityWrapper.appendChild(productQuantityMinus);
-                        productQuantityWrapper.appendChild(productQuantityElement);
-                        productQuantityWrapper.appendChild(productQuantityPlus);
-                        cartItemElement.appendChild(productPriceElement);
-                        cartItemElement.appendChild(productTotalElement);
-                        removalButton.addEventListener('click', function() {
-                            removeCartItem(cartItemElement, item.innerText);
-                        });
-                    }
+        let cancelled = false;
+
+        async function loadCart() {
+            const lines = parseStoredCart();
+
+            if (lines.length === 0) {
+                setCartItems([]);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/cart-items', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ lines }),
                 });
-            });
-        }
-        
 
-        const quantityPlus = document.querySelectorAll('#quantity-plus');
-        const quantityMinus = document.querySelectorAll('#quantity-minus');
+                const result = await response.json();
 
-        quantityPlus.forEach((item, index) => {
-            item.addEventListener('click', (clickedItem) => {
-                let quantity = clickedItem.target.parentElement.querySelector('#quantity');
-                let quantityValue = parseInt(quantity.value);
-                quantityValue++;
-                quantity.value = quantityValue;
-                reCalculateItemTotals();
-                calculateCartTotals();
-            });
-        });
-
-        quantityMinus.forEach((item, index) => {
-            item.addEventListener('click', (clickedItem) => {
-                let quantity = clickedItem.target.parentElement.querySelector('#quantity');
-                let quantityValue = parseInt(quantity.value);
-                if (quantityValue === 1) {
-
-                } else {
-                    quantityValue--;
-                    quantity.value = quantityValue;
-                    reCalculateItemTotals();
-                    calculateCartTotals();
+                if (!response.ok) {
+                    throw new Error(
+                        result?.error ||
+                        'The cart items could not be loaded.'
+                    );
                 }
-            });
-        });
 
-        const cartItems = document.querySelectorAll('.cart-item');
-        const cartItemsTotalElement = document.querySelector('.cart-items-total');
+                if (!cancelled) {
+                    const resolvedItems = result.items || [];
 
-        if (cartItems.length !== 0) {
-            cartItemsTotalElement.innerText = "(" + cartItems.length + ' items)';
+                    setCartItems(resolvedItems);
+                    storeCart(resolvedItems);
+                }
+            } catch (error) {
+                console.error('Unable to load the cart.', error);
+
+                if (!cancelled) {
+                    setLoadError(true);
+                    setCartItems([]);
+                }
+            }
         }
 
-        calculateCartTotals();
-        toggleCartHasItems();
- 
+        loadCart();
+
+        return () => {
+            cancelled = true;
+        };
     }, []);
+
+    const hasItems = Boolean(cartItems?.length);
+
+    useEffect(() => {
+        if (cartItems === null) {
+            return;
+        }
+
+        const storedCartHasItems =
+            loadError && parseStoredCart().length > 0;
+
+        updateHeaderCartState(
+            hasItems || storedCartHasItems
+        );
+    }, [cartItems, hasItems, loadError]);
+
+    function changeQuantity(variantId, amount) {
+        setCartItems((currentItems) => {
+            const nextItems = currentItems.map((item) =>
+                item.id === variantId
+                    ? {
+                        ...item,
+                        quantity: Math.max(
+                            1,
+                            item.quantity + amount
+                        ),
+                    }
+                    : item
+            );
+
+            storeCart(nextItems);
+
+            return nextItems;
+        });
+    }
+
+    function removeCartItem(variantId) {
+        setCartItems((currentItems) => {
+            const nextItems = currentItems.filter(
+                (item) => item.id !== variantId
+            );
+
+            storeCart(nextItems);
+
+            return nextItems;
+        });
+    }
+
+    function handleCheckout() {
+        if (!hasItems) {
+            return;
+        }
+
+        const preparedCart = cartItems
+            .map(
+                (item) =>
+                    `${item.id}:${item.quantity}`
+            )
+            .join(',');
+
+        window.localStorage.removeItem('cartItemList');
+        window.location.href =
+            `https://andersons-general-store-statesboro.myshopify.com/cart/${preparedCart}`;
+    }
+
+    const subtotal = (cartItems || []).reduce(
+        (total, item) =>
+            total +
+            Number.parseFloat(item.price) *
+            item.quantity,
+        0
+    );
 
     return (
         <>
-        <Content>
-            <div className="cart-function-buttons">
-                <button className="outline-button" onClick={goBack}>Continue Shopping</button>
-                <button id="top-checkout-button" className="green-button" onClick={handleCheckout}>Checkout</button>
-            </div>
-            <div className="wrapper">
-              <h1>{pageData.acf.page_title}</h1>
-              <div className="cart-empty">
-                    <h2>{pageData.acf.cart_empty_title}</h2>
-                    <div dangerouslySetInnerHTML={{ __html: pageData.acf.cart_empty_message }} className="content" />
-              </div>
-              <h6 className="cart-items-total"></h6>
-              <div className="explain-bar">
-                <h6 className="items">Items</h6>
-                <h6 className="quantity">Quantity</h6>
-                <h6 className="item-price">Item Price</h6>
-                <h6 className="total">Total</h6>
-              </div>
-            </div>
-        </Content>
-        
-        <CartStyle id="cart">
+            <Content>
+                <div className="cart-function-buttons">
+                    <button
+                        className="outline-button"
+                        onClick={goBack}
+                    >
+                        Continue Shopping
+                    </button>
+                    <button
+                        id="top-checkout-button"
+                        className={
+                            `green-button ${
+                                hasItems ? '' : 'hidden'
+                            }`
+                        }
+                        onClick={handleCheckout}
+                    >
+                        Checkout
+                    </button>
+                </div>
+                <div className="wrapper">
+                    <h1>{pageData.acf.page_title}</h1>
 
-        </CartStyle>
-
-        <Checkout className="checkout-wrapper">
-            <h6 className="cart-subtotal"></h6>
-            <button id="checkout-button" className="green-button" onClick={handleCheckout}>PROCEED TO CHECKOUT</button>
-        </Checkout>
-        
-        <Table>
-            <div id="variant-table" className="variant-table">
-                {products.products.map((product, index) => {
-                    return (
-                        <div className="product" key={index}>
-                            <div id="product-id">
-                                {product.id}
-                            </div>
-                            <div id="product-title">
-                                {product.title}
-                            </div>
-                            <div id="product-handle">
-                                {product.handle}
-                            </div>
-                            {product.variants.map((variant, index) => {
-                                return (
-                                    <>
-                                        <div className="variant-table-item" key={index}>
-                                            <div id="variant-id" className="variant-id">
-                                                {variant.id}
-                                            </div>
-                                            <div id="variant-title">
-                                                {variant.title}
-                                            </div>
-                                            <div id="price">
-                                                {variant.price}
-                                            </div>
-                                            <div id="variant-image">
-                                                {variant?.featured_image?.src || product?.images?.[0]?.src || ''}
-                                            </div>
-                                        </div>
-                                    </>
-                                );
-                            })}
+                    {cartItems === null && (
+                        <div className="cart-empty">
+                            <h2>Loading your cart...</h2>
                         </div>
-                    );
-                })}
-            </div>
-        </Table>
-        
+                    )}
+
+                    {loadError && (
+                        <div className="cart-empty">
+                            <h2>We could not load your cart</h2>
+                            <div className="content">
+                                <p>
+                                    Please refresh the page and try again.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    {cartItems !== null &&
+                        !loadError &&
+                        !hasItems && (
+                            <div className="cart-empty">
+                                <h2>
+                                    {pageData.acf.cart_empty_title}
+                                </h2>
+                                <div
+                                    dangerouslySetInnerHTML={{
+                                        __html:
+                                            pageData.acf
+                                                .cart_empty_message,
+                                    }}
+                                    className="content"
+                                />
+                            </div>
+                        )}
+
+                    {hasItems && (
+                        <h6 className="cart-items-total">
+                            ({cartItems.length}{' '}
+                            {cartItems.length === 1
+                                ? 'item'
+                                : 'items'})
+                        </h6>
+                    )}
+
+                    <div
+                        className={
+                            `explain-bar ${
+                                hasItems ? '' : 'hidden'
+                            }`
+                        }
+                    >
+                        <h6 className="items">Items</h6>
+                        <h6 className="quantity">Quantity</h6>
+                        <h6 className="item-price">Item Price</h6>
+                        <h6 className="total">Total</h6>
+                    </div>
+                </div>
+            </Content>
+
+            <CartStyle id="cart">
+                {(cartItems || []).map((item) => (
+                    <div className="cart-item" key={item.id}>
+                        <div id="cart-item-id">{item.id}</div>
+                        <Image
+                            className="variant-img"
+                            src={item.image}
+                            alt={item.imageAlt || item.title}
+                            width={120}
+                            height={120}
+                        />
+                        <div className="cart-item-content">
+                            <a href={`/products/${item.handle}`}>
+                                {item.title}
+                            </a>
+                            <h4>{item.variantTitle}</h4>
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    removeCartItem(item.id)
+                                }
+                            >
+                                Remove
+                            </button>
+                        </div>
+                        <div className="quantity-box">
+                            <button
+                                type="button"
+                                className="quantity-control"
+                                aria-label={`Decrease quantity for ${item.title}`}
+                                onClick={() =>
+                                    changeQuantity(item.id, -1)
+                                }
+                            >
+                                <Image
+                                    src="https://inside2.andersonsgeneral.com/wp-content/uploads/2023/08/minus.svg"
+                                    alt=""
+                                    width={32}
+                                    height={32}
+                                />
+                            </button>
+                            <input
+                                type="number"
+                                min="1"
+                                value={item.quantity}
+                                aria-label={`Quantity for ${item.title}`}
+                                disabled
+                            />
+                            <button
+                                type="button"
+                                className="quantity-control"
+                                aria-label={`Increase quantity for ${item.title}`}
+                                onClick={() =>
+                                    changeQuantity(item.id, 1)
+                                }
+                            >
+                                <Image
+                                    src="https://inside2.andersonsgeneral.com/wp-content/uploads/2023/08/plus.svg"
+                                    alt=""
+                                    width={32}
+                                    height={32}
+                                />
+                            </button>
+                        </div>
+                        <h3 className="cart-item-price">
+                            ${formatCurrency(item.price)}
+                        </h3>
+                        <h3 className="cart-item-total">
+                            ${formatCurrency(
+                                item.price * item.quantity
+                            )}
+                        </h3>
+                    </div>
+                ))}
+            </CartStyle>
+
+            <Checkout
+                className={
+                    `checkout-wrapper ${
+                        hasItems ? '' : 'hidden'
+                    }`
+                }
+            >
+                <h6 className="cart-subtotal">
+                    Estimated Subtotal: ${formatCurrency(subtotal)}
+                </h6>
+                <button
+                    id="checkout-button"
+                    className="green-button"
+                    onClick={handleCheckout}
+                >
+                    PROCEED TO CHECKOUT
+                </button>
+            </Checkout>
         </>
     );
 }
