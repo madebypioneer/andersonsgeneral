@@ -318,14 +318,7 @@ const Content = styled.div`
         display: grid !important;
     }
     .variant-showcase-img {
-        width: 20px;
-        border: 3px solid transparent;
-        transition: border .25s;
-        &:hover {
-            cursor: pointer;
-            border: 3px solid #092615;
-            transition: border .25s;
-        }
+        transition: transform .25s;
     }
     .variant-secondary-img {
         border: 3px solid transparent;
@@ -340,16 +333,27 @@ const Content = styled.div`
         border: 3px solid #092615;
     }
     .showcase-img-wrapper {
+        display: block;
         position: relative;
         width: 48px;
         height: 48px;
+        box-sizing: border-box;
+        overflow: hidden;
         border: 2px solid #091511;
         border-radius: 6px;
     }
     .variant-color-trigger {
+        display: block;
+        flex: 0 0 48px;
+        width: 48px;
+        height: 48px;
         padding: 0;
         background: transparent;
         border: 0;
+        line-height: 0;
+        &:hover .variant-showcase-img {
+            transform: scale(1.06);
+        }
     }
     .variant-color-trigger-active .showcase-img-wrapper {
         border-color: #97783F;
