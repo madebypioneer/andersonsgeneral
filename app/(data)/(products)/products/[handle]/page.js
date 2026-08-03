@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import { revalidateInterval } from '../../../../global-settings.js';
+import { BUILT_COLLECTION_HANDLES } from '../../../../shopify-build-settings.js';
 import { notFound } from 'next/navigation';
 import ProductSingle from '../../../../templates/ProductSingle';
 
@@ -10,12 +11,6 @@ const SHOPIFY_API_VERSION = '2026-07';
 
 const SHOPIFY_STOREFRONT_ENDPOINT =
     `https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
-
-const ALLOWED_COLLECTION_HANDLES = [
-  'hats-headwear',
-  'misc',
-  'tops',
-];
 
 /*
  * Shopify request helper
@@ -604,10 +599,10 @@ async function getProductsByCollection(
   return products;
 }
 
-async function getAllProducts() {
+async function getBuiltCollectionProducts() {
   const collectionProductGroups =
       await Promise.all(
-          ALLOWED_COLLECTION_HANDLES.map(
+          BUILT_COLLECTION_HANDLES.map(
               (collectionHandle) =>
                   getProductsByCollection(
                       collectionHandle
@@ -710,7 +705,7 @@ function productIsAllowed(productResult) {
 
   return productResult.collectionHandles.some(
       (collectionHandle) =>
-          ALLOWED_COLLECTION_HANDLES.includes(
+          BUILT_COLLECTION_HANDLES.includes(
               collectionHandle
           )
   );
@@ -747,8 +742,8 @@ export default async function Page({
           productCollections:
           productResult.collectionHandles,
 
-          allowedCollections:
-          ALLOWED_COLLECTION_HANDLES,
+          builtCollections:
+          BUILT_COLLECTION_HANDLES,
         }
     );
 
@@ -767,12 +762,12 @@ export default async function Page({
 /*
  * Product routes generated during next build.
  *
- * Dynamic product routes remain allowed by default, so a route
- * that was not returned here can still render on demand.
+ * Handles are collected only from the collections included in this build.
+ * Products shared by multiple collections are deduplicated by handle.
  */
 export async function generateStaticParams() {
   const products =
-      await getAllProducts();
+      await getBuiltCollectionProducts();
 
   return products.products.map(
       (product) => ({
@@ -780,6 +775,12 @@ export async function generateStaticParams() {
       })
   );
 }
+
+/*
+ * Do not generate additional product routes on demand. New products become
+ * available after the next build includes them in one of the built collections.
+ */
+export const dynamicParams = false;
 
 /*
  * Product metadata

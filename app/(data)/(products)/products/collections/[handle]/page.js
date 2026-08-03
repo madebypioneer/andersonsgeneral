@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import { revalidateInterval } from '../../../../../global-settings.js';
+import { BUILT_COLLECTION_HANDLES } from '../../../../../shopify-build-settings.js';
 import { notFound } from 'next/navigation';
 import CollectionSingle from '../../../../../templates/CollectionSingle';
 
@@ -10,16 +11,6 @@ const SHOPIFY_API_VERSION = '2026-07';
 
 const SHOPIFY_STOREFRONT_ENDPOINT =
     `https://${SHOPIFY_STORE_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
-
-/*
- * Set this to an array to restrict which collection routes are allowed:
- *
- * const ALLOWED_COLLECTION_HANDLES = ['hats', 'misc', 'tops'];
- *
- * Leave it null to allow every collection published to the
- * Headless storefront.
- */
-const ALLOWED_COLLECTION_HANDLES = null;
 
 /*
  * Shared Storefront API request helper.
@@ -241,29 +232,6 @@ const SINGLE_COLLECTION_QUERY = `
           hasNextPage
           endCursor
         }
-      }
-    }
-  }
-`;
-
-/*
- * Preserves your existing allProducts prop by fetching every
- * product visible to the Headless storefront.
- */
-const ALL_PRODUCTS_QUERY = `
-  query AllProducts($after: String) {
-    products(
-      first: 250
-      after: $after
-      sortKey: TITLE
-    ) {
-      nodes {
-        ${PRODUCT_FIELDS}
-      }
-
-      pageInfo {
-        hasNextPage
-        endCursor
       }
     }
   }
@@ -629,15 +597,10 @@ function mapProductToLegacyShape(product) {
 }
 
 /*
- * Returns true when no restriction is configured, or when the
- * requested collection is included in the configured list.
+ * Returns true when the requested collection is included in this build.
  */
 function collectionHandleIsAllowed(handle) {
-  if (!Array.isArray(ALLOWED_COLLECTION_HANDLES)) {
-    return true;
-  }
-
-  return ALLOWED_COLLECTION_HANDLES.includes(
+  return BUILT_COLLECTION_HANDLES.includes(
       handle
   );
 }
@@ -791,48 +754,38 @@ const getSingleCollection = cache(
 );
 
 /*
- * Fetch all published products so the existing allProducts
- * prop remains available.
+ * Build the searchable product list from the configured collections only.
+ * A product can belong to more than one collection, so deduplicate by handle.
  */
-const getAllProducts = cache(async () => {
-  const products = [];
+const getBuiltCollectionProducts = cache(async () => {
+  const collectionResults =
+      await Promise.all(
+          BUILT_COLLECTION_HANDLES.map(
+              (collectionHandle) =>
+                  getSingleCollection(
+                      collectionHandle
+                  )
+          )
+      );
 
-  let after = null;
-  let hasNextPage = true;
+  const productsByHandle = new Map();
 
-  while (hasNextPage) {
-    const data =
-        await shopifyStorefrontFetch(
-            ALL_PRODUCTS_QUERY,
-            {
-              after,
-            }
-        );
-
-    const connection =
-        data.products;
-
-    const pageProducts =
-        connection?.nodes || [];
-
-    products.push(
-        ...pageProducts.map(
-            mapProductToLegacyShape
-        )
+  collectionResults.forEach((collectionResult) => {
+    (collectionResult?.products || []).forEach(
+        (product) => {
+          if (product?.handle) {
+            productsByHandle.set(
+                product.handle,
+                product
+            );
+          }
+        }
     );
-
-    hasNextPage =
-        Boolean(
-            connection?.pageInfo?.hasNextPage
-        );
-
-    after =
-        connection?.pageInfo?.endCursor ||
-        null;
-  }
+  });
 
   return {
-    products,
+    products:
+        Array.from(productsByHandle.values()),
   };
 });
 
@@ -851,11 +804,11 @@ export default async function Page({
   const [
     collectionResult,
     allCollectionsResult,
-    allProductsResult,
+    builtProductsResult,
   ] = await Promise.all([
     getSingleCollection(handle),
     getAllCollections(),
-    getAllProducts(),
+    getBuiltCollectionProducts(),
   ]);
 
   if (!collectionResult) {
@@ -888,7 +841,7 @@ export default async function Page({
           }
 
           allProducts={
-            allProductsResult.products
+            builtProductsResult.products
           }
 
           collectionData={
@@ -899,7 +852,7 @@ export default async function Page({
 }
 
 /*
- * Generate every published collection route during build.
+ * Generate only the configured collection routes during build.
  */
 export async function generateStaticParams() {
   const collectionsResult =
