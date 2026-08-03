@@ -1,6 +1,8 @@
 import { cache } from 'react';
-import { revalidateInterval } from '../../../../global-settings.js';
-import { BUILT_COLLECTION_HANDLES } from '../../../../shopify-build-settings.js';
+import {
+  builtCollectionHandles,
+  revalidateInterval,
+} from '../../../../global-settings.js';
 import { notFound } from 'next/navigation';
 import ProductSingle from '../../../../templates/ProductSingle';
 
@@ -602,7 +604,7 @@ async function getProductsByCollection(
 async function getBuiltCollectionProducts() {
   const collectionProductGroups =
       await Promise.all(
-          BUILT_COLLECTION_HANDLES.map(
+          builtCollectionHandles.map(
               (collectionHandle) =>
                   getProductsByCollection(
                       collectionHandle
@@ -705,7 +707,7 @@ function productIsAllowed(productResult) {
 
   return productResult.collectionHandles.some(
       (collectionHandle) =>
-          BUILT_COLLECTION_HANDLES.includes(
+          builtCollectionHandles.includes(
               collectionHandle
           )
   );
@@ -743,7 +745,7 @@ export default async function Page({
           productResult.collectionHandles,
 
           builtCollections:
-          BUILT_COLLECTION_HANDLES,
+          builtCollectionHandles,
         }
     );
 

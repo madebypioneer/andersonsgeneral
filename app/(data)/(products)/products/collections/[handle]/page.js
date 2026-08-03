@@ -1,6 +1,8 @@
 import { cache } from 'react';
-import { revalidateInterval } from '../../../../../global-settings.js';
-import { BUILT_COLLECTION_HANDLES } from '../../../../../shopify-build-settings.js';
+import {
+  builtCollectionHandles,
+  revalidateInterval,
+} from '../../../../../global-settings.js';
 import { notFound } from 'next/navigation';
 import CollectionSingle from '../../../../../templates/CollectionSingle';
 
@@ -600,7 +602,7 @@ function mapProductToLegacyShape(product) {
  * Returns true when the requested collection is included in this build.
  */
 function collectionHandleIsAllowed(handle) {
-  return BUILT_COLLECTION_HANDLES.includes(
+  return builtCollectionHandles.includes(
       handle
   );
 }
@@ -760,7 +762,7 @@ const getSingleCollection = cache(
 const getBuiltCollectionProducts = cache(async () => {
   const collectionResults =
       await Promise.all(
-          BUILT_COLLECTION_HANDLES.map(
+          builtCollectionHandles.map(
               (collectionHandle) =>
                   getSingleCollection(
                       collectionHandle
